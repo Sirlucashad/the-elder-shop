@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import List
-from app.schemas.plataforma import PlataformaOut
-from app.schemas.tipo_producto import TipoProductoOut
+from app.schemas.platform import PlataformaOut
+from app.schemas.product_type import TipoProductoOut
 
 class ProductoOut(BaseModel):
     id: int

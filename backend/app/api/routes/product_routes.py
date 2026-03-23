@@ -5,7 +5,7 @@ from app.db.database import get_db
 from app.repositories.product_repository import ProductRepository
 from app.services.product_service import ProductService
 from app.schemas.product import ProductoOut
-from app.schemas.product_create import ProductoCreate
+from app.schemas.product import ProductoCreate  
 
 router = APIRouter(prefix="/productos", tags=["Productos"])
 
@@ -29,10 +29,4 @@ def create_producto(data: ProductoCreate, db: Session = Depends(get_db)):
     repo = ProductRepository(db)
     service = ProductService(repo)
 
-    return service.create_product(
-        data.nombre,
-        data.precio,
-        data.stock,
-        data.tipo_id,
-        data.plataformas_ids
-    )
+    return service.create_product(data)

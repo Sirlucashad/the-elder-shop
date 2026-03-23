@@ -1,16 +1,35 @@
 from pydantic import BaseModel
 from typing import List
-from app.schemas.platform import PlataformaOut
-from app.schemas.product_type import TipoProductoOut
+
+
+class ProductoPlataformaCreate(BaseModel):
+    plataforma_id: int
+    stock: int
+
+
+class ProductoCreate(BaseModel):
+    nombre: str
+    precio: float
+    tipo_id: int
+    plataformas: List[ProductoPlataformaCreate]
+
+
+class PlataformaStockOut(BaseModel):
+    id: int
+    nombre: str
+    stock: int
+
+    class Config:
+        from_attributes = True
+
 
 class ProductoOut(BaseModel):
     id: int
     nombre: str
     precio: float
-    stock: int
 
-    tipo: TipoProductoOut
-    plataformas: List[PlataformaOut]
+    tipo: dict
+    plataformas: List[PlataformaStockOut]
 
     class Config:
         from_attributes = True

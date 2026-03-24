@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 # IMPORTAR MODELOS (importante para Alembic)
-from app.models import Producto, TipoProducto, Plataforma, ProductoPlataforma
+from app.models import Producto, Plataforma, TipoProducto, ProductoVariante, Videojuego, Genero, VideojuegoGenero
 
 # ROUTES
 from app.api.routes.product_routes import router as product_router

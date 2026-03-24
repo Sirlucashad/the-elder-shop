@@ -4,9 +4,9 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# 👇 IMPORTANTE
+
 from app.db.database import Base
-from app.models import Producto, Plataforma, TipoProducto, ProductoPlataforma
+from app.models import Producto, Plataforma, TipoProducto, ProductoVariante, Videojuego, Genero, VideojuegoGenero, Formato
 
 config = context.config
 

@@ -1,23 +1,53 @@
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
 
-class ProductoPlataformaCreate(BaseModel):
-    plataforma_id: int
+# ======================
+# CREATE
+# ======================
+
+class VarianteCreate(BaseModel):
+    plataforma_id: Optional[int]
+    formato_id: Optional[int]
     stock: int
+    precio: Optional[float]
+
+
+class VideojuegoCreate(BaseModel):
+    anio_lanzamiento: int
+    jugadores_max: int
+    es_cooperativo: bool
+    generos_ids: List[int]
 
 
 class ProductoCreate(BaseModel):
     nombre: str
-    precio: float
+    descripcion: Optional[str]
     tipo_id: int
-    plataformas: List[ProductoPlataformaCreate]
+
+    variantes: List[VarianteCreate]
+    videojuego: Optional[VideojuegoCreate] = None
 
 
-class PlataformaStockOut(BaseModel):
+# ======================
+# OUTPUT
+# ======================
+
+class VarianteOut(BaseModel):
     id: int
-    nombre: str
+    plataforma_id: Optional[int]
+    formato_id: Optional[int]
     stock: int
+    precio: Optional[float]
+
+    class Config:
+        from_attributes = True
+
+
+class VideojuegoOut(BaseModel):
+    anio_lanzamiento: int
+    jugadores_max: int
+    es_cooperativo: bool
 
     class Config:
         from_attributes = True
@@ -26,10 +56,10 @@ class PlataformaStockOut(BaseModel):
 class ProductoOut(BaseModel):
     id: int
     nombre: str
-    precio: float
+    descripcion: Optional[str]
 
-    tipo: dict
-    plataformas: List[PlataformaStockOut]
+    variantes: List[VarianteOut]
+    videojuego: Optional[VideojuegoOut]
 
     class Config:
         from_attributes = True

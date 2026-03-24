@@ -8,14 +8,11 @@ class Producto(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String(100), nullable=False)
-    precio = Column(Float, nullable=False)
+    descripcion = Column(String(255))
+    precio_base = Column(Float, nullable=True)
 
     tipo_id = Column(Integer, ForeignKey("tipos_producto.id"))
 
     tipo = relationship("TipoProducto")
-
-    plataformas = relationship(
-        "Plataforma",
-        secondary="producto_plataforma",
-        backref="productos"
-    )
+    variantes = relationship("ProductoVariante", back_populates="producto")
+    videojuego = relationship("Videojuego", uselist=False, back_populates="producto")

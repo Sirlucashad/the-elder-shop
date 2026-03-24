@@ -2,8 +2,9 @@ from sqlalchemy.orm import joinedload
 from fastapi import HTTPException
 
 from app.models.producto import Producto
-from app.models.plataforma import Plataforma
-from app.models.producto_plataforma import ProductoPlataforma
+from app.models.producto_variante import ProductoVariante
+from app.models.videojuego import Videojuego
+from app.models.genero import Genero
 
 
 class ProductRepository:
@@ -11,64 +12,85 @@ class ProductRepository:
     def __init__(self, db):
         self.db = db
 
-    def get_all(self):
-        productos = self.db.query(Producto).options(
-            joinedload(Producto.tipo),
-            joinedload(Producto.producto_plataforma).joinedload(ProductoPlataforma.plataforma)
-        ).all()
-
-        result = []
-
-        for p in productos:
-            plataformas = [
-                {
-                    "id": rel.plataforma.id,
-                    "nombre": rel.plataforma.nombre,
-                    "stock": rel.stock
-                }
-                for rel in p.producto_plataforma
-            ]
-
-            result.append({
-                "id": p.id,
-                "nombre": p.nombre,
-                "precio": p.precio,
-                "tipo": {
-                    "id": p.tipo.id,
-                    "nombre": p.tipo.nombre
-                },
-                "plataformas": plataformas
-            })
-
-        return result
-
+    # ======================
+    # CREATE
+    # ======================
     def create(self, data):
         producto = Producto(
             nombre=data.nombre,
-            precio=data.precio,
+            descripcion=data.descripcion,
             tipo_id=data.tipo_id
         )
 
         self.db.add(producto)
+        self.db.flush()
+
+        # Variantes
+        for v in data.variantes:
+            variante = ProductoVariante(
+                producto_id=producto.id,
+                plataforma_id=v.plataforma_id,
+                formato_id=v.formato_id,
+                stock=v.stock,
+                precio=v.precio
+            )
+            self.db.add(variante)
+
+        # Videojuego
+        if data.videojuego:
+            videojuego = Videojuego(
+                producto_id=producto.id,
+                anio_lanzamiento=data.videojuego.anio_lanzamiento,
+                jugadores_max=data.videojuego.jugadores_max,
+                es_cooperativo=data.videojuego.es_cooperativo
+            )
+            self.db.add(videojuego)
+            self.db.flush()
+
+            generos = self.db.query(Genero).filter(
+                Genero.id.in_(data.videojuego.generos_ids)
+            ).all()
+
+            videojuego.generos = generos
+
         self.db.commit()
         self.db.refresh(producto)
 
-        for p in data.plataformas:
-            plataforma = self.db.query(Plataforma).filter(
-                Plataforma.id == p.plataforma_id
-            ).first()
+        return producto
 
-            if not plataforma:
-                raise HTTPException(status_code=400, detail="Plataforma no existe")
+    # ======================
+    # GET ALL
+    # ======================
+    def get_all(self):
+        return self.db.query(Producto).options(
+            joinedload(Producto.variantes),
+            joinedload(Producto.videojuego)
+        ).all()
 
-            rel = ProductoPlataforma(
-                producto_id=producto.id,
-                plataforma_id=plataforma.id,
-                stock=p.stock
-            )
+    # ======================
+    # GET BY ID
+    # ======================
+    def get_by_id(self, producto_id: int):
+        producto = self.db.query(Producto).options(
+            joinedload(Producto.variantes),
+            joinedload(Producto.videojuego)
+        ).filter(Producto.id == producto_id).first()
 
-            self.db.add(rel)
-
-        self.db.commit()
+        if not producto:
+            raise HTTPException(status_code=404, detail="Producto no encontrado")
 
         return producto
+
+    # ======================
+    # DELETE
+    # ======================
+    def delete(self, producto_id: int):
+        producto = self.db.query(Producto).filter(Producto.id == producto_id).first()
+
+        if not producto:
+            raise HTTPException(status_code=404, detail="Producto no encontrado")
+
+        self.db.delete(producto)
+        self.db.commit()
+
+        return {"message": "Producto eliminado"}

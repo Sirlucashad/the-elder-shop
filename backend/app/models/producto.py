@@ -14,5 +14,16 @@ class Producto(Base):
     tipo_id = Column(Integer, ForeignKey("tipos_producto.id"))
 
     tipo = relationship("TipoProducto")
-    variantes = relationship("ProductoVariante", back_populates="producto")
-    videojuego = relationship("Videojuego", uselist=False, back_populates="producto")
+
+    variantes = relationship(
+        "ProductoVariante",
+        back_populates="producto",
+        cascade="all, delete"
+    )
+
+    videojuego = relationship(
+        "Videojuego",
+        uselist=False,
+        back_populates="producto",
+        cascade="all, delete"
+    )

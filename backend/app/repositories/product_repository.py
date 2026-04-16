@@ -1,4 +1,5 @@
 from sqlalchemy.orm import joinedload
+from sqlalchemy import and_
 from fastapi import HTTPException
 
 from app.models.producto import Producto
@@ -94,3 +95,44 @@ class ProductRepository:
         self.db.commit()
 
         return {"message": "Producto eliminado"}
+
+    # ======================
+    # SEARCH 
+    # ======================
+    def search(
+        self,
+        nombre: str = None,
+        genero_id: int = None,
+        precio_min: float = None,
+        precio_max: float = None,
+        limit: int = 10,
+        offset: int = 0
+    ):
+        query = self.db.query(Producto).options(
+            joinedload(Producto.variantes),
+            joinedload(Producto.videojuego).joinedload(Videojuego.generos)
+        )
+
+        # 🔎 nombre
+        if nombre:
+            query = query.filter(Producto.nombre.ilike(f"%{nombre}%"))
+
+        # 🎮 genero
+        if genero_id:
+            query = query.join(Producto.videojuego).join(Videojuego.generos).filter(
+                Genero.id == genero_id
+            )
+
+        # 💰 precio
+        if precio_min is not None or precio_max is not None:
+            query = query.join(Producto.variantes)
+
+            condiciones = []
+            if precio_min is not None:
+                condiciones.append(ProductoVariante.precio >= precio_min)
+            if precio_max is not None:
+                condiciones.append(ProductoVariante.precio <= precio_max)
+
+            query = query.filter(and_(*condiciones))
+
+        return query.offset(offset).limit(limit).all()

@@ -29,7 +29,7 @@ export default function HomeView() {
         </div>
       </section>
 
-      <div className="hidden md:block absolute -right-40 -bottom-50 -rotate-23 overflow-hidden size-150 z-20 opacity-20 ">
+      <div className="hidden md:block absolute -right-40 -bottom-50 -rotate-23  size-150 z-20 opacity-20 ">
         <img className="" src={logoElder} alt="Elder Shop" />
       </div>
       

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import logo from "/src/assets/icons/logoElderShop.png";
 import Instagram from "/src/assets/icons/Instagram.svg";
 import Facebook from "/src/assets/icons/Facebook.svg";
@@ -16,15 +17,17 @@ export default function Header() {
       <div className="flex items-center justify-between h-40 pl-1 pr-6 mx-10">
 
         {/* LOGO */}
-        <div className="flex items-center gap-0 ml-2">
+        <Link to="/">
+          <div className="flex items-center gap-0 ml-2">
 
-          <img src={logo} alt="Elder Shop" className="h-30" />
+            <img src={logo} alt="Elder Shop" className="h-30" />
 
 
-          <span className="hidden md:block text-3xl font-bold tracking-wide font-medieval ml-4">
-            THE ELDER SHOP
-          </span>
-        </div>
+            <span className="hidden md:block text-3xl font-bold tracking-wide font-medieval ml-4">
+              THE ELDER SHOP
+            </span>
+          </div>
+        </Link>
 
         {/* SEARCH */}
         <div className="hidden md:flex flex-1 px-6">
@@ -42,9 +45,11 @@ export default function Header() {
             Iniciar sesión
           </button>
 
-          <button className="hidden md:block bg-yellow-500 text-black px-4 py-2 rounded-lg hover:bg-yellow-400 transition cursor-pointer">
-            Registrarse
-          </button>
+          <Link to="/register">
+            <button className="hidden md:block bg-yellow-500 text-black px-4 py-2 rounded-lg hover:bg-yellow-400 transition cursor-pointer">
+              Registrarse
+            </button>
+          </Link>
 
           {/* CARRITO */}
           <button className="relative cursor-pointer text-3xl hover:scale-110 transition">
@@ -82,7 +87,7 @@ export default function Header() {
           {catOpen && (
             <ul
               className="absolute left-0 top-full w-full bg-[#081520] border border-gray-700 shadow-xl z-50"
-              onMouseLeave={() => setActiveSub(null)} 
+              onMouseLeave={() => setActiveSub(null)}
             >
 
               {/* CATEGORÍA: JUEGOS */}
@@ -175,32 +180,34 @@ export default function Header() {
 
 
       {/* MOBILE MENU */}
-      {menuOpen && (
-        <div className="md:hidden bg-[#081520] px-6 py-4 space-y-4">
+      {
+        menuOpen && (
+          <div className="md:hidden bg-[#081520] px-6 py-4 space-y-4">
 
-          <input
-            type="search"
-            placeholder="Buscar..."
-            className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white"
-          />
+            <input
+              type="search"
+              placeholder="Buscar..."
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white"
+            />
 
-          <a href="#" className="block">Juegos</a>
-          <a href="#" className="block">Consolas</a>
-          <a href="#" className="block">Accesorios</a>
-          <a href="#" className="block">Ofertas</a>
+            <a href="#" className="block">Juegos</a>
+            <a href="#" className="block">Consolas</a>
+            <a href="#" className="block">Accesorios</a>
+            <a href="#" className="block">Ofertas</a>
 
-          <hr className="border-gray-700" />
+            <hr className="border-gray-700" />
 
-          <button className="block w-full text-left">
-            Iniciar sesión
-          </button>
+            <button className="block w-full text-left">
+              Iniciar sesión
+            </button>
 
-          <button className="block w-full text-left text-yellow-400">
-            Registrarse
-          </button>
-        </div>
-      )}
+            <button className="block w-full text-left text-yellow-400">
+              Registrarse
+            </button>
+          </div>
+        )
+      }
 
-    </header>
+    </header >
   );
 }

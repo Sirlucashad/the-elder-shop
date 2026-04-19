@@ -16,12 +16,12 @@ export default function Header() {
       <div className="flex items-center justify-between h-40 pl-1 pr-6">
 
         {/* LOGO */}
-        <div className="flex items-center gap-0">
+        <div className="flex items-center gap-0 ml-4">
 
           <img src={logo} alt="Elder Shop" className="h-30" />
 
 
-          <span className="hidden md:block text-3xl font-bold tracking-wide font-medieval">
+          <span className="hidden md:block text-3xl font-bold tracking-wide font-medieval ml-4">
             THE ELDER SHOP
           </span>
         </div>
@@ -79,11 +79,10 @@ export default function Header() {
             CATEGORÍAS {catOpen ? '▲' : '▼'}
           </button>
 
-          {/* EL RECTÁNGULO DESPLEGABLE PRINCIPAL */}
           {catOpen && (
             <ul
               className="absolute left-0 top-full w-full bg-[#081520] border border-gray-700 shadow-xl z-50"
-              onMouseLeave={() => setActiveSub(null)} // Limpia submenús al salir del cuadro
+              onMouseLeave={() => setActiveSub(null)} 
             >
 
               {/* CATEGORÍA: JUEGOS */}

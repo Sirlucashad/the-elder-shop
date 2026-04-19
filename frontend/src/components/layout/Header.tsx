@@ -1,9 +1,13 @@
 import { useState } from "react";
 import logo from "/src/assets/icons/logoElderShop.png";
+import Instagram from "/src/assets/icons/Instagram.svg";
+import Facebook from "/src/assets/icons/Facebook.svg";
+import WhatsApp from "/src/assets/icons/WhatsAppIcon.svg";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
+  const [activeSub, setActiveSub] = useState(null);
 
   return (
     <header className="w-full bg-[#0c375a] text-white shadow-md">
@@ -64,10 +68,10 @@ export default function Header() {
 
 
       {/* NAVBAR (categorías) */}
-      <div className="hidden md:flex items-center gap-8 h-15 bg-[#081520] text-sm font-medium">
+      <div className="hidden md:flex items-center justify-between gap-8 h-15 bg-[#081520] text-sm font-medium font-medieval">
 
         {/* CONTENEDOR RELATIVO*/}
-        <div className="relative h-full ml-4">
+        <div className="relative h-full ml-1">
           <button
             onClick={() => setCatOpen(!catOpen)}
             className="h-full px-25 text-white font-extrabold bg-[#1a2e3e] hover:bg-[#253d52] border-b-2 border-yellow-500 cursor-pointer transition-colors"
@@ -75,25 +79,99 @@ export default function Header() {
             CATEGORÍAS {catOpen ? '▲' : '▼'}
           </button>
 
-          {/* EL RECTÁNGULO DESPLEGABLE */}
+          {/* EL RECTÁNGULO DESPLEGABLE PRINCIPAL */}
           {catOpen && (
-            <ul className="absolute left-0 top-full w-full bg-[#081520] border border-gray-700 shadow-xl z-50">
-              <li className="hover:bg-yellow-500 hover:text-black transition">
-                <a href="#" className="block px-6 py-3">Juegos PC</a>
+            <ul
+              className="absolute left-0 top-full w-full bg-[#081520] border border-gray-700 shadow-xl z-50"
+              onMouseLeave={() => setActiveSub(null)} // Limpia submenús al salir del cuadro
+            >
+
+              {/* CATEGORÍA: JUEGOS */}
+              <li
+                className="relative hover:bg-yellow-500 hover:text-black transition group"
+                onMouseEnter={() => setActiveSub('juegos')}
+              >
+                <a href="#" className="flex justify-between items-center px-6 py-3">
+                  Juegos <span>▶</span>
+                </a>
+
+                {/* SUBMENÚ HACIA LA DERECHA */}
+                {activeSub === 'juegos' && (
+                  <ul className="absolute left-full top-0 w-48 bg-[#081520] border border-gray-700 shadow-xl text-white">
+                    <li className="hover:bg-yellow-500 hover:text-black p-3 border-b border-gray-700"><a href="#">PC</a></li>
+                    <li className="hover:bg-yellow-500 hover:text-black p-3 border-b border-gray-700"><a href="#">PS4</a></li>
+                    <li className="hover:bg-yellow-500 hover:text-black p-3 border-b border-gray-700"><a href="#">PS5</a></li>
+                    <li className="hover:bg-yellow-500 hover:text-black p-3"><a href="#">Xbox Series</a></li>
+                  </ul>
+                )}
               </li>
-              <li className="hover:bg-yellow-500 hover:text-black transition border-t border-gray-700">
-                <a href="#" className="block px-6 py-3">PlayStation</a>
+
+              {/* CATEGORÍA: CONSOLAS */}
+              <li
+                className="relative hover:bg-yellow-500 hover:text-black transition border-t border-gray-700"
+                onMouseEnter={() => setActiveSub('consolas')}
+              >
+                <a href="#" className="flex justify-between items-center px-6 py-3">
+                  Consolas <span>▶</span>
+                </a>
+
+                {activeSub === 'consolas' && (
+                  <ul className="absolute left-full top-0 w-48 bg-[#081520] border border-gray-700 shadow-xl text-white">
+                    <li className="hover:bg-yellow-500 hover:text-black p-3 border-b border-gray-700"><a href="#">PS4</a></li>
+                    <li className="hover:bg-yellow-500 hover:text-black p-3 border-b border-gray-700"><a href="#">PS5</a></li>
+                    <li className="hover:bg-yellow-500 hover:text-black p-3"><a href="#">Nintendo</a></li>
+                  </ul>
+                )}
               </li>
-              <li className="hover:bg-yellow-500 hover:text-black transition border-t border-gray-700">
-                <a href="#" className="block px-6 py-3">Xbox</a>
+
+              {/* CATEGORÍA: ACCESORIOS */}
+              <li
+                className="relative hover:bg-yellow-500 hover:text-black transition border-t border-gray-700"
+                onMouseEnter={() => setActiveSub('accesorios')}
+              >
+                <a href="#" className="flex justify-between items-center px-6 py-3">
+                  Accesorios <span>▶</span>
+                </a>
+
+                {activeSub === 'accesorios' && (
+                  <ul className="absolute left-full top-0 w-48 bg-[#081520] border border-gray-700 shadow-xl text-white">
+                    <li className="hover:bg-yellow-500 hover:text-black p-3 border-b border-gray-700"><a href="#">Joysticks</a></li>
+                    <li className="hover:bg-yellow-500 hover:text-black p-3 border-b border-gray-700"><a href="#">Auriculares</a></li>
+                    <li className="hover:bg-yellow-500 hover:text-black p-3 border-b border-gray-700"><a href="#">Pantallas</a></li>
+                    <li className="hover:bg-yellow-500 hover:text-black p-3"><a href="#">Teclados</a></li>
+                  </ul>
+                )}
               </li>
-              <li className="hover:bg-yellow-500 hover:text-black transition border-t border-gray-700">
-                <a href="#" className="block px-6 py-3">Nintendo</a>
-              </li>
+
             </ul>
           )}
         </div>
+
+
+
+        <div className="flex items-center gap-4 h-full pr-6">
+
+          {/* INSTAGRAM */}
+          <a href="#" target="_blank" rel="noreferrer" className="block hover:scale-110 transition-transform">
+            <img src={Instagram} alt="Instagram" className="h-10 w-10 object-contain" />
+          </a>
+
+          {/* FACEBOOK */}
+          <a href="#" target="_blank" rel="noreferrer" className="block hover:scale-110 transition-transform">
+            <img src={Facebook} alt="Facebook" className="h-10 w-10 object-contain" />
+          </a>
+
+          {/* WHATSAPP */}
+          <a href="#" target="_blank" rel="noreferrer" className="block hover:scale-110 transition-transform">
+            <img src={WhatsApp} alt="WhatsApp" className="h-10 w-10 object-contain" />
+          </a>
+
+        </div>
+
       </div>
+
+
+
 
 
 

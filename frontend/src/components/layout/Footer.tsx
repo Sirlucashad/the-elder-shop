@@ -4,13 +4,13 @@ import kratos from '../../assets/images/kratos.png'
 
 export default function Footer() {
   return (
-    <footer className="relative w-full bg-[#081520] text-gray-300 overflow-hidden">
+    <footer className="relative w-full bg-[#081520] text-gray-300 overflow-hidden z-30">
 
       {/* IMAGEN IZQUIERDA */}
       <img
         src={lara}
         alt=""
-        className="hidden lg:block absolute left-0 bottom-0 w-64 opacity-60 pointer-events-none"
+        className="hidden lg:block absolute left-0 bottom-0 w-97 opacity-60 pointer-events-none"
       />
 
       {/* IMAGEN DERECHA */}
@@ -21,7 +21,7 @@ export default function Footer() {
       />
 
       {/* CONTENIDO */}
-      <div className="max-w-7xl mx-auto px-6 py-17 grid grid-cols-1 md:grid-cols-4 gap-10 relative z-10">
+      <div className="max-w-5xl mx-auto px-6 py-17 grid grid-cols-1 md:grid-cols-4 gap-10 relative z-10">
 
         {/* MARCA */}
         <div>
@@ -35,8 +35,8 @@ export default function Footer() {
           </p>
 
           <div className="mt-4 space-y-1 text-sm text-gray-400">
-            <p>📍 Buenos Aires, Argentina</p>
-            <p>📞 +54 11 1234-5678</p>
+            <p>📍 La Plata, Buenos Aires, Argentina</p>
+            <p>📞 +54 221 123-5678</p>
             <p>✉️ ventas@eldershop.com</p>
           </div>
         </div>

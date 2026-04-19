@@ -10,13 +10,13 @@ export default function Header() {
   const [activeSub, setActiveSub] = useState(null);
 
   return (
-    <header className="w-full bg-[#0c375a] text-white shadow-md">
+    <header className="w-full bg-[#041e33] text-white shadow-md">
 
       {/* TOP BAR */}
-      <div className="flex items-center justify-between h-40 pl-1 pr-6">
+      <div className="flex items-center justify-between h-40 pl-1 pr-6 mx-10">
 
         {/* LOGO */}
-        <div className="flex items-center gap-0 ml-4">
+        <div className="flex items-center gap-0 ml-2">
 
           <img src={logo} alt="Elder Shop" className="h-30" />
 

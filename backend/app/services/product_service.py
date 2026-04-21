@@ -28,7 +28,7 @@ class ProductService:
         return self.repository.delete(producto_id)
 
     # ======================
-    # SEARCH (NUEVO 🔥)
+    # SEARCH
     # ======================
     def search_products(
         self,

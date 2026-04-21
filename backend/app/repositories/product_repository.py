@@ -20,13 +20,17 @@ class ProductRepository:
         producto = Producto(
             nombre=data.nombre,
             descripcion=data.descripcion,
-            tipo_id=data.tipo_id
+            tipo_id=data.tipo_id,
+            image_url=data.image_url,              
+            image_public_id=data.image_public_id   
         )
 
         self.db.add(producto)
         self.db.flush()
 
+        # ======================
         # Variantes
+        # ======================
         for v in data.variantes:
             variante = ProductoVariante(
                 producto_id=producto.id,
@@ -37,7 +41,9 @@ class ProductRepository:
             )
             self.db.add(variante)
 
+        # ======================
         # Videojuego
+        # ======================
         if data.videojuego:
             videojuego = Videojuego(
                 producto_id=producto.id,

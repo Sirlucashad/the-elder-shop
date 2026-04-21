@@ -28,6 +28,9 @@ class ProductoCreate(BaseModel):
     variantes: List[VarianteCreate]
     videojuego: Optional[VideojuegoCreate] = None
 
+    image_url: Optional[str] = None
+    image_public_id: Optional[str] = None
+
 
 # ======================
 # OUTPUT
@@ -57,6 +60,8 @@ class ProductoOut(BaseModel):
     id: int
     nombre: str
     descripcion: Optional[str]
+
+    image_url: Optional[str]
 
     variantes: List[VarianteOut]
     videojuego: Optional[VideojuegoOut]

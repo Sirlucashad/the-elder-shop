@@ -13,6 +13,10 @@ class Producto(Base):
 
     tipo_id = Column(Integer, ForeignKey("tipos_producto.id"))
 
+    
+    image_url = Column(String(255), nullable=True)
+    image_public_id = Column(String(255), nullable=True)
+
     tipo = relationship("TipoProducto")
 
     variantes = relationship(

@@ -13,7 +13,7 @@ router = APIRouter(prefix="/productos", tags=["Productos"])
 
 
 # ======================
-# CREATE
+# CREATE (JSON limpio)
 # ======================
 @router.post("/", response_model=ProductoOut)
 def create_producto(
@@ -23,6 +23,7 @@ def create_producto(
 ):
     repo = ProductRepository(db)
     service = ProductService(repo)
+
     return service.create_product(data)
 
 
@@ -61,12 +62,12 @@ def delete_producto(
 
 
 # ======================
-# SEARCH / FILTER 🔥
+# SEARCH
 # ======================
 @router.get("/search/")
 def search_productos(
-    nombre: str = Query(None, description="Buscar por nombre"),
-    genero_id: int = Query(None, description="Filtrar por género"),
+    nombre: str = Query(None),
+    genero_id: int = Query(None),
     precio_min: float = Query(None),
     precio_max: float = Query(None),
     limit: int = Query(10, le=100),

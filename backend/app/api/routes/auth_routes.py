@@ -26,7 +26,7 @@ def register_cliente(data: ClienteCreate, db: Session = Depends(get_db)):
 def register_admin(
     data: UsuarioCreate, 
     db: Session = Depends(get_db),
-    # Aquí podrías agregar una dependencia para que solo un admin actual cree otro
+  
     # current_user: Usuario = Depends(get_current_admin) 
 ):
     """
@@ -50,7 +50,7 @@ def login(
     service = UserService(UserRepository(db))
     
     # Creamos un objeto que coincida con lo que espera el servicio
-    # En OAuth2PasswordRequestForm, el campo se llama 'username' aunque pongas el email
+    # En OAuth2PasswordRequestForm, el campo se llama 'username' aunque se ponga el email
     login_data = UsuarioLogin(email=form_data.username, password=form_data.password)
     
     return service.login(login_data)

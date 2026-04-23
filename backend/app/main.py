@@ -5,7 +5,7 @@ from app.models import (
     Producto, Plataforma, TipoProducto,
     ProductoVariante, Videojuego, Genero,
     VideojuegoGenero, Formato, Usuario, Carrito, CarritoItem,
-    Orden, DetalleOrden, Pago
+    Orden, DetalleOrden, Pago, VarianteDigital
 )
 
 from app.api.routes.product_routes import router as product_router

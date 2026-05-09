@@ -47,3 +47,8 @@ class UserRepository:
         self.db.commit()
         self.db.refresh(user)
         return user
+    
+    def delete(self, user: Usuario):
+        """Elimina un usuario de la DB."""
+        self.db.delete(user)
+        self.db.commit()

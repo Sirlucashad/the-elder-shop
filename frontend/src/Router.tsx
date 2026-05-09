@@ -3,6 +3,7 @@ import RegisterView from "./views/RegisterView"
 import LoginView from "./views/LoginView"
 import MainLayout from "./layouts/MainLayout"
 import HomeView from "./views/HomeView"
+import ConfirmEmailView from "./views/ConfirmEmailView"
 
 export default function Router() {
   return (
@@ -14,6 +15,8 @@ export default function Router() {
 
           <Route path="/login" element={<LoginView />} />
           <Route path="/register" element={<RegisterView />} />
+
+          <Route path="/confirm-email" element={<ConfirmEmailView />} />
 
         </Route>
       </Routes>

@@ -6,7 +6,7 @@ export default function HomeView() {
 
 
   return (
-    <div className="relative z-10 max-h-svh pb-16 text-white bg-linear-to-b from-slate-800 to-black">
+    <div className="relative z-10 max-h-svh pb-16 text-white bg-linear-to-b from-slate-800 to-black overflow-hidden ">
 
     
 

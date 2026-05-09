@@ -69,7 +69,7 @@ class UserService:
             # 4. Enviar email de confirmación
             try:
                 logger.info(f"📧 Intentando enviar email de confirmación a {user.email}")
-                link = f"{FRONTEND_URL}/confirm-email?token={token}"
+                link = f"{FRONTEND_URL}confirm-email?token={token}"
                 send_email(
                     user.email,
                     "Bienvenido a The Elder Shop - Confirma tu cuenta",
@@ -158,3 +158,19 @@ class UserService:
         except Exception as e:
             logger.error(f"🔥 Error en confirm_email: {traceback.format_exc()}")
             raise HTTPException(500, detail="Error al activar la cuenta")
+        
+
+    def delete_user(self, user_id: int):
+        logger.info(f"Intentando eliminar usuario con ID: {user_id}")
+
+        user = self.repository.get_by_id(user_id)
+
+        if not user:
+            logger.warning(f"Usuario con ID {user_id} no encontrado")
+            return None  # clave
+
+        self.repository.delete(user)
+
+        logger.info(f"Usuario con ID {user_id} eliminado correctamente")
+                
+            

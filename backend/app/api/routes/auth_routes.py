@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -69,3 +69,14 @@ def forgot_password(email: str, db: Session = Depends(get_db)):
 def reset_password(token: str, new_password: str, db: Session = Depends(get_db)):
     service = UserService(UserRepository(db))
     return service.reset_password(token, new_password)
+
+
+
+@router.delete("/users/{user_id}", status_code=204)
+def delete_user(user_id: int, db: Session = Depends(get_db)):
+    service = UserService(UserRepository(db))
+
+    result = service.delete_user(user_id)
+
+    if result is None:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")

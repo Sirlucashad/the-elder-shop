@@ -1,8 +1,10 @@
 import { useForm } from 'react-hook-form';
 import { useRegister } from '../hooks/useAuth';
+import ErrorMessage from '../components/ErrorMessage'
 import type { ClienteCreate } from '../types/auth';
 import logoElder from '../assets/icons/logoElderShop.png';
-import { provinciasArgentina } from '../constants/locations';
+import { LOCALIZACIONES_ARGENTINA, type Provincia } from '../constants/locations';
+import { toast } from 'sonner';
 
 export default function RegisterView() {
 
@@ -33,6 +35,8 @@ export default function RegisterView() {
   };
 
   const password = watch('password')
+  const provinciaSeleccionada = watch('provincia') as Provincia;
+  const ciudadesDisponibles = provinciaSeleccionada ? LOCALIZACIONES_ARGENTINA[provinciaSeleccionada] : [];
 
   return (
     <div className="relative min-h-screen w-full bg-linear-to-b from-slate-900 to-slate-950 py-10 px-4 flex items-center justify-center overflow-hidden">
@@ -67,6 +71,7 @@ export default function RegisterView() {
                     required: 'El nombre es obligatorio'
                   })}
                 />
+                {errors.nombre && <ErrorMessage>{errors.nombre.message}</ErrorMessage>}
               </div>
 
 
@@ -82,6 +87,7 @@ export default function RegisterView() {
                     required: 'El apellido es obligatorio'
                   })}
                 />
+                {errors.apellido && <ErrorMessage>{errors.apellido.message}</ErrorMessage>}
               </div>
             </div>
 
@@ -96,6 +102,7 @@ export default function RegisterView() {
                   required: 'El nombre de usuario es obligatorio'
                 })}
               />
+              {errors.username && <ErrorMessage>{errors.username.message}</ErrorMessage>}
             </div>
 
             {/* EMAIL */}
@@ -113,6 +120,7 @@ export default function RegisterView() {
                   }
                 })}
               />
+              {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
             </div>
 
             {/* PASSWORD */}
@@ -130,6 +138,7 @@ export default function RegisterView() {
                   }
                 })}
               />
+              {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
             </div>
             <div>
               <label className="block text-sm mb-1 text-black font-bold">Confirmar Password</label>
@@ -138,51 +147,66 @@ export default function RegisterView() {
                 type="password"
                 className="w-full border bg-white border-gray-300 rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-amber-400"
                 {...register("password_confirmation", {
-                  required: 'La contraseña es obligatoria',
+                  required: 'Confirmar password es obligatorio',
                   validate: (value) => value === password || 'Las contraseñas no coinciden',
 
                 })}
               />
+              {errors.password_confirmation && <ErrorMessage>{errors.password_confirmation.message}</ErrorMessage>}
             </div>
 
 
 
-            {/* TELEFONO Y PROVINCIA */}
+
             <div className="grid grid-cols-2 gap-4">
+
+              <div>
+                <div>
+                  <label className="block text-sm mb-1 text-black font-bold">Provincia</label>
+                  <select className="w-full border bg-white border-gray-300 rounded-md px-3 py-2 cursor-pointer"
+                    id='provincia'
+                    {...register("provincia")}
+
+                  >
+                    <option value="" selected disabled hidden>Seleccione una provincia</option>
+
+                    {Object.keys(LOCALIZACIONES_ARGENTINA).map(prov => (
+                      <option key={prov} value={prov}>{prov}</option>
+                    ))}
+
+                  </select>
+                 
+                </div>
+
+
+                <div>
+                  <label className="block text-sm mb-1 text-black font-bold">Ciudad</label>
+                  <select className="w-full border bg-white border-gray-300 rounded-md px-3 py-2 hover:cursor-pointer"
+                    id='ciudad'
+                    disabled={!provinciaSeleccionada}
+                    {...register("ciudad")}
+                  >
+                    <option value="">{provinciaSeleccionada ? "Seleccione ciudad" : "Elija provincia"}</option>
+                    {ciudadesDisponibles.map(ciudad => (
+                      <option key={ciudad} value={ciudad}>{ciudad}</option>
+                    ))}
+                  </select>
+                </div>
+
+
+              </div>
+
               <div>
                 <label className="block text-sm mb-1 text-black font-bold">Teléfono</label>
-                <input
+                <input className="w-full border bg-white border-gray-300 rounded-md px-3 py-2 "
                   id='telefono'
                   type="text"
-                  className="w-full border bg-white border-gray-300 rounded-md px-3 py-2"
                   {...register("telefono")}
                 />
               </div>
-              <div>
-                <label className="block text-sm mb-1 text-black font-bold">Provincia</label>
-                <select
-                  id='provincia'
-                  {...register("provincia")}
-                  className="w-full border bg-white border-gray-300 rounded-md px-3 py-2"
-                >
-                  <option value="" selected disabled hidden>Seleccione una provincia</option>
-                  {provinciasArgentina.map((provincia) => (
-                    <option key={provincia.id} value={provincia.nombre}>{provincia.nombre}</option>
-                  ))}
-
-                </select>
-              </div>
 
               {/* CIUDAD */}
-              <div>
-                <label className="block text-sm mb-1 text-black font-bold">Ciudad</label>
-                <input
-                  id='ciudad'
-                  {...register("ciudad")}
-                  type="text"
-                  className="w-full border bg-white border-gray-300 rounded-md px-3 py-2"
-                />
-              </div>
+
             </div>
 
             {/* DIRECCIÓN */}

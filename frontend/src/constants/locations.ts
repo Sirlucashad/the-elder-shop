@@ -1,29 +1,3 @@
-export const provinciasArgentina = [
-  { id: "BA", nombre: "Buenos Aires" },
-  { id: "CABA", nombre: "Ciudad Autónoma de Buenos Aires" },
-  { id: "CT", nombre: "Catamarca" },
-  { id: "CC", nombre: "Chaco" },
-  { id: "CH", nombre: "Chubut" },
-  { id: "CD", nombre: "Córdoba" },
-  { id: "CR", nombre: "Corrientes" },
-  { id: "ER", nombre: "Entre Ríos" },
-  { id: "FO", nombre: "Formosa" },
-  { id: "JY", nombre: "Jujuy" },
-  { id: "LP", nombre: "La Pampa" },
-  { id: "LR", nombre: "La Rioja" },
-  { id: "MZ", nombre: "Mendoza" },
-  { id: "MN", nombre: "Misiones" },
-  { id: "NE", nombre: "Neuquén" },
-  { id: " RN", nombre: "Río Negro" },
-  { id: "SA", nombre: "Salta" },
-  { id: "SJ", nombre: "San Juan" },
-  { id: "SL", nombre: "San Luis" },
-  { id: "SC", nombre: "Santa Cruz" },
-  { id: "SF", nombre: "Santa Fe" },
-  { id: "SE", nombre: "Santiago del Estero" },
-  { id: "TF", nombre: "Tierra del Fuego" },
-  { id: "TM", nombre: "Tucumán" },
-];
 
 export const LOCALIZACIONES_ARGENTINA = {
   "Ciudad Autónoma de Buenos Aires": [
@@ -100,5 +74,4 @@ export const LOCALIZACIONES_ARGENTINA = {
   ]
 };
 
-// Tipo útil para TypeScript
 export type Provincia = keyof typeof LOCALIZACIONES_ARGENTINA;

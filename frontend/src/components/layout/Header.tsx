@@ -59,13 +59,15 @@ export default function Header() {
 
 
           {/* SEARCH */}
-          <div className="hidden md:flex flex-1 px-6">
-            <input
-              type="search"
-              placeholder="Buscar juegos, consolas, accesorios..."
-              className="w-full max-w-2xl mx-auto px-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-yellow-500"
-            />
-          </div>
+          {isAuthenticated && (
+            <div className="hidden md:flex flex-1 px-6">
+              <input
+                type="search"
+                placeholder="Buscar juegos, consolas, accesorios..."
+                className="w-full max-w-2xl mx-auto px-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-yellow-500"
+              />
+            </div>
+          )}
 
 
           {/* ACTIONS */}

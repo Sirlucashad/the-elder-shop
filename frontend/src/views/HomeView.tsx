@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom';
+import { useAuthContext } from '../context/AuthContext.tsx';
 
 import logoElder from '../assets/icons/logoElderShop.png';
 
 export default function HomeView() {
+
+  const { isAuthenticated } = useAuthContext();
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-linear-to-b from-slate-950 via-slate-900 to-slate-950 text-stone-200">
@@ -56,20 +59,34 @@ export default function HomeView() {
             {/* BOTONES */}
             <div className="flex flex-wrap gap-4 pt-2">
 
-              <Link
-                to="/shop"
-                className="bg-amber-600 hover:bg-amber-700 transition px-8 py-4 rounded-xl font-bold text-white shadow-xl"
-              >
-                Ingresa a la tienda
-              </Link>
 
+              <>
+                {isAuthenticated ? (
+                  <Link
+                    to="/shop"
+                    className="bg-amber-600 hover:bg-amber-700 transition px-8 py-4 rounded-xl font-bold text-white shadow-xl"
+                  >
+                    Ingresa a la tienda
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      to="/login"
+                      className="bg-amber-600 hover:bg-amber-700 transition px-8 py-4 rounded-xl font-bold text-white shadow-xl"
+                    >
+                      Ingresa a tu cuenta
+                    </Link>
 
-              <Link
-                to="/auth/register"
-                className="border border-stone-600 hover:border-amber-500 hover:text-amber-400 transition px-8 py-4 rounded-xl font-semibold"
-              >
-                Crea tu cuenta
-              </Link>
+                    <Link
+                      to="/auth/register"
+                      className="border border-stone-600 hover:border-amber-500 hover:text-amber-400 transition px-8 py-4 rounded-xl font-semibold"
+                    >
+                      Crea tu cuenta
+                    </Link>
+                  </>
+                )}
+              </>
+
             </div>
 
 
@@ -181,10 +198,10 @@ export default function HomeView() {
             </div>
 
 
-           
 
 
-       
+
+
 
           </div>
         </div>

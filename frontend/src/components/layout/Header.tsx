@@ -142,12 +142,14 @@ export default function Header() {
           {/* CONTENEDOR RELATIVO */}
           <div className="relative h-full ml-1">
 
-            <button
-              onClick={() => setCatOpen(!catOpen)}
-              className="h-full px-25 text-white font-extrabold bg-[#1a2e3e] hover:bg-[#253d52] border-b-2 border-yellow-500 cursor-pointer transition-colors"
-            >
-              CATEGORÍAS {catOpen ? '▲' : '▼'}
-            </button>
+            {isAuthenticated && (
+              <button
+                onClick={() => setCatOpen(!catOpen)}
+                className="h-full px-25 text-white font-extrabold bg-[#1a2e3e] hover:bg-[#253d52] border-b-2 border-yellow-500 cursor-pointer transition-colors"
+              >
+                CATEGORÍAS {catOpen ? '▲' : '▼'}
+              </button>
+            )}
 
             {catOpen && (
               <ul

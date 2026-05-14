@@ -78,7 +78,7 @@ export default function HomeView() {
                     </Link>
 
                     <Link
-                      to="/auth/register"
+                      to="/register"
                       className="border border-stone-600 hover:border-amber-500 hover:text-amber-400 transition px-8 py-4 rounded-xl font-semibold"
                     >
                       Crea tu cuenta

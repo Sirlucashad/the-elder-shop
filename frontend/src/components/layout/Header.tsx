@@ -77,7 +77,7 @@ export default function Header() {
               <>
                 <Link
                   to="/login"
-                  className="hidden md:block hover:text-yellow-400 transition cursor-pointer"
+                  className="hidden md:block mr-2 hover:text-yellow-400 transition cursor-pointer"
                 >
                   Iniciar sesión
                 </Link>

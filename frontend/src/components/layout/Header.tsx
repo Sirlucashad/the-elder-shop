@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 
 import logo from "/src/assets/icons/logoElderShop.png";
@@ -13,7 +13,7 @@ export default function Header() {
   const [catOpen, setCatOpen] = useState(false);
   const [activeSub, setActiveSub] = useState<string | null>(null);
 
-  // NUEVO: controla el modal de confirmación
+
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const {
@@ -23,6 +23,9 @@ export default function Header() {
   } = useAuthContext();
 
   const navigate = useNavigate();
+  const location = useLocation()
+
+  const isRegisterView = location.pathname === "/register";
 
 
   // LOGOUT REAL
@@ -82,12 +85,13 @@ export default function Header() {
                   Iniciar sesión
                 </Link>
 
-                <Link
-                  to="/register"
-                  className="hidden md:block bg-yellow-500 text-black px-4 py-2 rounded-lg hover:bg-yellow-400 transition cursor-pointer"
-                >
-                  Registrarse
-                </Link>
+                {!isRegisterView && (
+                  <Link
+                    to="/register"
+                    className="hidden md:block bg-yellow-500 text-black px-4 py-2 rounded-lg hover:bg-yellow-400 transition cursor-pointer"
+                  >
+                    Registrarse
+                  </Link>)}
               </>
             ) : (
               <>
@@ -101,15 +105,7 @@ export default function Header() {
                 </button>
 
 
-                {/* ADMIN */}
-                {isAdmin && (
-                  <Link
-                    to="/admin"
-                    className="hidden md:block bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-500 transition"
-                  >
-                    Admin
-                  </Link>
-                )}
+
 
 
                 {/* LOGOUT */}
@@ -259,7 +255,18 @@ export default function Header() {
 
 
           {/* REDES */}
+
           <div className="flex items-center gap-4 h-full pr-6">
+
+            {/* ADMIN */}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="hidden md:block bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-500 transition"
+              >
+                Admin
+              </Link>
+            )}
 
             <a
               href="#"

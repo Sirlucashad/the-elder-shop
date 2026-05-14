@@ -4,6 +4,7 @@ import LoginView from "./views/LoginView"
 import MainLayout from "./layouts/MainLayout"
 import HomeView from "./views/HomeView"
 import ConfirmEmailView from "./views/ConfirmEmailView"
+import ShopView from "./views/ShopView"
 
 export default function Router() {
   return (
@@ -17,6 +18,8 @@ export default function Router() {
           <Route path="/register" element={<RegisterView />} />
 
           <Route path="/confirm-email" element={<ConfirmEmailView />} />
+
+          <Route path="/shop" element={<ShopView />} />
 
         </Route>
       </Routes>

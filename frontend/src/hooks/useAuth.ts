@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { authService } from '../services/authService';
+import { useAuthContext } from '../context/AuthContext.tsx';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner'; 
+import { toast } from 'sonner';
 
 export const useRegister = () => {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ export const useRegister = () => {
   return useMutation({
     mutationFn: authService.register,
     onSuccess: (data) => {
-     
+
       toast.success(data.message || "¡Registro exitoso! Por favor, verifica tu email.");
       navigate('/login');
     },
@@ -37,7 +38,7 @@ export const useConfirmEmail = () => {
   });
 };
 
-export const useLogin = () => {
+{/*export const useLogin = () => {
   const navigate = useNavigate();
 
   return useMutation({
@@ -45,14 +46,53 @@ export const useLogin = () => {
     onSuccess: (data) => {
       localStorage.setItem('token', data.access_token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      
+
       // Toast de bienvenida personalizado
-      toast.success(`¡Bienvenido de nuevo, ${data.user.nombre}!`);
-      
-      navigate('/dashboard'); 
+      toast.success(`¡Bienvenido de nuevo, ${data.user.username}!`);
+
+      navigate('/shop');
     },
     onError: (error: any) => {
       const errorMsg = error.response?.data?.detail || "Credenciales inválidas";
+      toast.error(errorMsg);
+    }
+  });
+};*/}
+
+export const useLogin = () => {
+
+  const navigate = useNavigate();
+
+  const { login } = useAuthContext();
+
+  return useMutation({
+
+    mutationFn: ({
+      email,
+      password
+    }: any) =>
+      authService.login(email, password),
+
+    onSuccess: (data) => {
+
+      login(
+        data.access_token,
+        data.user
+      );
+
+      toast.success(
+        `¡Bienvenido ${data.user.username}!`
+      );
+
+      navigate('/shop');
+    },
+
+    onError: (error: any) => {
+
+      const errorMsg =
+        error.response?.data?.detail ||
+        'Credenciales inválidas';
+
       toast.error(errorMsg);
     }
   });

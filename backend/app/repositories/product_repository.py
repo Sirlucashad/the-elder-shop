@@ -86,15 +86,40 @@ class ProductRepository:
     # ======================
     # GET ALL
     # ======================
+ # app/repositories/product_repository.py
+
     def get_all(self):
         try:
+            # Cargamos variantes Y sus relaciones (plataforma/formato) para tener los nombres reales
             return self.db.query(Producto).options(
-                joinedload(Producto.variantes),
+                joinedload(Producto.variantes).joinedload(ProductoVariante.plataforma),
+                joinedload(Producto.variantes).joinedload(ProductoVariante.formato),
                 joinedload(Producto.videojuego)
             ).all()
         except Exception as e:
-            logger.error(f"Error al obtener todos los productos: {str(e)}")
-            raise HTTPException(status_code=500, detail="Error al obtener la lista de productos")
+            logger.error(f"Error al obtener productos: {str(e)}")
+            raise HTTPException(status_code=500, detail="Error al obtener la lista")
+
+    def delete(self, producto_id: int):
+        try:
+            producto = self.db.query(Producto).filter(Producto.id == producto_id).first()
+            if not producto:
+                raise HTTPException(status_code=404, detail="Producto no encontrado")
+
+            # Eliminamos manualmente las variantes primero para evitar el conflicto 
+            # con la tabla 'variantes_digitales' que no existe
+            self.db.query(ProductoVariante).filter(ProductoVariante.producto_id == producto_id).delete()
+            
+            # Si tienes la tabla videojuegos, también deberías borrar su entrada vinculada
+            self.db.query(Videojuego).filter(Videojuego.producto_id == producto_id).delete()
+
+            self.db.delete(producto)
+            self.db.commit()
+            return {"message": "Producto eliminado con éxito"}
+        except Exception as e:
+            self.db.rollback()
+            logger.error(f"Error al eliminar: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
     # ======================
     # GET BY ID

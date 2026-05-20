@@ -15,6 +15,7 @@ from app.api.routes.carrito_routes import router as carrito_router
 from app.api.routes.orden_routes import router as orden_router
 from app.api.routes.pago_routes import router as pago_router
 from app.api.routes.image_routes import router as image_router
+from app.api.routes.genero_routes import router as genero_router
 
 
 
@@ -41,6 +42,7 @@ app.include_router(carrito_router)
 app.include_router(orden_router)
 app.include_router(pago_router)
 app.include_router(image_router)
+app.include_router(genero_router)
 
 @app.get("/")
 def root():

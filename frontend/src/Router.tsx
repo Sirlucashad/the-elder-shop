@@ -7,6 +7,7 @@ import ConfirmEmailView from "./views/ConfirmEmailView"
 import ShopView from "./views/ShopView"
 import AdminDashboardView from "./views/AdminDashBoardView"
 import CreateProductView from "./views/CreateProductView"
+import ProductsView from "./views/ProductsView"
 
 export default function Router() {
 
@@ -63,6 +64,12 @@ export default function Router() {
               element={<CreateProductView />}
             />
 
+            {/*Lista de productos*/}
+            <Route
+              path="products"
+              element={<ProductsView />}
+            />
+
           </Route>
 
         </Route>
@@ -72,4 +79,4 @@ export default function Router() {
     </BrowserRouter>
   );
 }
- 
+

@@ -1,38 +1,109 @@
-export interface ProductFormData {
-    // PRODUCTO BASE
-    nombre: string;
-    descripcion: string;
-    precio_base: number;
-    tipo_id: number;
-    image_url?: string;
+export interface VarianteDigitalFormData {
+    url_descarga: string;
+    peso_gb?: number;
+    instrucciones_canje?: string;
+}
 
-    // VARIANTE
-    stock?: number;
-    precio_variante?: number;
+export interface VarianteFormData {
     plataforma_id?: number;
     formato_id?: number;
 
-    // VIDEOJUEGO
-    anio_lanzamiento?: number;
-    jugadores_max?: number;
-    es_cooperativo?: boolean;
+    stock: number;
+    precio: number;
 
-    // GÉNEROS
-    accion?: boolean;
-    aventura?: boolean;
-    rpg?: boolean;
-    shooter?: boolean;
-    survival?: boolean;
-    deportes?: boolean;
+    detalle_digital?: VarianteDigitalFormData;
 }
 
-// Product Types
+export interface VideojuegoFormData {
+    anio_lanzamiento: number;
+    jugadores_max: number;
+    es_cooperativo: boolean;
+
+    generos_ids: number[];
+}
+
+export interface ProductFormData {
+    nombre: string;
+    descripcion?: string;
+
+    tipo_id: number | "";
+
+    image_url?: string;
+    public_id?: string;
+
+    variantes: VarianteFormData[];
+
+    videojuego?: VideojuegoFormData;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export interface Plataforma {
+    id: number;
+    nombre: string;
+}
+
+export interface Formato {
+    id: number;
+    nombre: string;
+}
+
+export interface Genero {
+    id: number;
+    nombre: string;
+}
+
+export interface VarianteDigital {
+    id: number;
+
+    url_descarga: string;
+    peso_gb?: number;
+    instrucciones_canje?: string;
+}
+
+export interface Variante {
+    id: number;
+
+    plataforma_id?: number;
+    formato_id?: number;
+
+    stock: number;
+    precio?: number;
+
+    plataforma?: Plataforma;
+    formato?: Formato;
+
+    detalle_digital?: VarianteDigital;
+}
+
+export interface Videojuego {
+    anio_lanzamiento: number;
+    jugadores_max: number;
+    es_cooperativo: boolean;
+
+    generos: Genero[];
+}
+
 export interface Product {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  precio: number;
-  stock: number;
-  genero_id?: number;
-  imagen_url?: string;
+    id: number;
+
+    nombre: string;
+    descripcion?: string;
+
+    image_url?: string;
+
+    variantes: Variante[];
+
+    videojuego?: Videojuego;
 }

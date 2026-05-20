@@ -259,10 +259,10 @@ export default function Header() {
           <div className="flex items-center gap-4 h-full pr-6">
 
             {/* ADMIN */}
-            {isAdmin && (
+            {(isAdmin && isAuthenticated) && (
               <Link
                 to="/admin"
-                className="hidden md:block bg-purple-600 px-4 py-2 rounded-lg hover:bg-purple-500 transition"
+                className="hidden md:block bg-yellow-600 px-5 py-3 rounded-lg hover:bg-yellow-500 transition"
               >
                 Admin
               </Link>

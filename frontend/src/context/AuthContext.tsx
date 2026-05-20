@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface User {
   username: string;
@@ -61,6 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode;}) {
 
   const logout = () => {
 
+    
     setToken(null);
 
     setUser(null);
@@ -68,6 +70,8 @@ export function AuthProvider({ children }: { children: React.ReactNode;}) {
     localStorage.removeItem('token');
 
     localStorage.removeItem('user');
+
+    toast.success('¡Regresa pronto!')
   };
 
   useEffect(() => {

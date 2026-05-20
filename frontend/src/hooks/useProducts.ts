@@ -4,11 +4,48 @@ import type { ProductFormData } from "../types/products";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner"; // Importamos la magia de sonner
 
-// Hook para obtener la lista de productos
+// Hook para obtener la lista de productos completa
 export const useProducts = () => {
     return useQuery({
         queryKey: ["products"],
         queryFn: productService.getProducts,
+    });
+};
+
+// Hook para extraer y filtrar los géneros únicos desde los productos ya cargados
+export const useGenerosDesdeProductos = () => {
+    return useQuery({
+        queryKey: ["products"], // Comparte la misma Query Key para usar la memoria caché existente
+        queryFn: productService.getProducts,
+        select: (productos) => {
+            const generosMap = new Map<number, { id: number; nombre: string }>();
+
+            if (!Array.isArray(productos)) return [];
+
+            productos.forEach((producto) => {
+                // Obtenemos los géneros de forma completamente segura mediante encadenamiento opcional
+                const generos = producto?.videojuego?.generos;
+
+                if (Array.isArray(generos)) {
+                    generos.forEach((genero) => {
+                        // Evita duplicados usando el id en el Map
+                        if (genero && genero.id !== undefined) {
+                            if (!generosMap.has(genero.id)) {
+                                generosMap.set(genero.id, {
+                                    id: genero.id,
+                                    nombre: genero.nombre,
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+
+            // Retornamos la lista mapeada y ordenada alfabéticamente por nombre
+            return Array.from(generosMap.values()).sort((a, b) =>
+                a.nombre.localeCompare(b.nombre)
+            );
+        },
     });
 };
 
@@ -27,7 +64,7 @@ export const useProductActions = () => {
             });
 
             queryClient.invalidateQueries({ queryKey: ["products"] });
-            navigate("/admin/products");
+            navigate("/admin");
         },
         onError: (error: any) => {
             const msg = error.response?.data?.detail || "No se pudo conectar con el servidor";

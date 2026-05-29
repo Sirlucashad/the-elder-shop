@@ -19,7 +19,7 @@ export interface VideojuegoFormData {
     jugadores_max: number;
     es_cooperativo: boolean;
 
-    generos_ids: number[];
+    generos_ids: string[];
 }
 
 export interface ProductFormData {

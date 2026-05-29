@@ -9,6 +9,7 @@ import AdminDashboardView from "./views/AdminDashBoardView"
 import CreateProductView from "./views/CreateProductView"
 import ProductsView from "./views/ProductsView"
 import EditProduct from "./views/EditProduct"
+import CheckoutView from "./views/CheckoutView"
 
 export default function Router() {
 
@@ -47,6 +48,12 @@ export default function Router() {
           <Route
             path="shop"
             element={<ShopView />}
+          />
+
+          {/*CHECKOUT*/}
+          <Route
+            path="checkout"
+            element={<CheckoutView />}
           />
 
 

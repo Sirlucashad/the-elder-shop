@@ -1,9 +1,25 @@
 import { useCart } from "../context/CartContext";
 
 export default function CartSidebar() {
-    const { cartItems, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, subtotal, total } = useCart();
+    const {
+        cartItems,
+        isCartOpen,
+        setIsCartOpen,
+        updateQuantity,
+        removeFromCart,
+        subtotal = 0, // Valor por defecto seguro
+        total = 0     // Valor por defecto seguro
+    } = useCart();
 
     if (!isCartOpen) return null;
+
+    const handleProcederCompra = () => {
+        // 1. Cerramos la barra lateral limpiamente para que no moleste visualmente
+        setIsCartOpen(false);
+
+        // 2. Redirección nativa y segura que no depende del orden del Router de React
+        window.location.href = "/checkout";
+    };
 
     return (
         <>
@@ -24,7 +40,7 @@ export default function CartSidebar() {
                     </div>
                     <button
                         onClick={() => setIsCartOpen(false)}
-                        className="text-slate-400 hover:text-white text-sm bg-slate-800/50 hover:bg-slate-800 px-2 py-1 rounded-md transition"
+                        className="text-slate-400 hover:text-white text-sm bg-slate-800/50 hover:bg-slate-800 px-2 py-1 rounded-md transition cursor-pointer"
                     >
                         Cerrar ✕
                     </button>
@@ -66,7 +82,7 @@ export default function CartSidebar() {
                                 <div className="flex flex-col items-end justify-between flex-shrink-0">
                                     <button
                                         onClick={() => removeFromCart(item.id)}
-                                        className="text-slate-500 hover:text-red-400 transition text-xs p-1"
+                                        className="text-slate-500 hover:text-red-400 transition text-xs p-1 cursor-pointer"
                                         title="Eliminar del carrito"
                                     >
                                         🗑️
@@ -75,14 +91,15 @@ export default function CartSidebar() {
                                     <div className="flex items-center bg-slate-950 rounded-lg p-0.5 border border-slate-800">
                                         <button
                                             onClick={() => updateQuantity(item.id, item.producto_variante_id, item.cantidad - 1)}
-                                            className="w-5 h-5 flex items-center justify-center text-xs text-slate-400 hover:text-amber-500 font-bold transition"
+                                            className="w-5 h-5 flex items-center justify-center text-xs text-slate-400 hover:text-amber-500 font-bold transition cursor-pointer"
+                                            disabled={item.cantidad <= 1}
                                         >
                                             -
                                         </button>
                                         <span className="w-6 text-center text-xs font-bold text-amber-400">{item.cantidad}</span>
                                         <button
                                             onClick={() => updateQuantity(item.id, item.producto_variante_id, item.cantidad + 1)}
-                                            className="w-5 h-5 flex items-center justify-center text-xs text-slate-400 hover:text-amber-500 font-bold transition"
+                                            className="w-5 h-5 flex items-center justify-center text-xs text-slate-400 hover:text-amber-500 font-bold transition cursor-pointer"
                                         >
                                             +
                                         </button>
@@ -108,12 +125,8 @@ export default function CartSidebar() {
                         </div>
 
                         <button
-                            onClick={() => {
-                                setIsCartOpen(false);
-                                // Aquí redirigirías al proceso de checkout formal
-                                // navigate("/checkout");
-                            }}
-                            className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 py-3 rounded-xl font-bold text-sm tracking-wide shadow-md shadow-amber-500/10 hover:from-amber-400 hover:to-yellow-400 transition duration-200 cursor-pointer text-center block"
+                            onClick={handleProcederCompra}
+                            className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 py-3 rounded-xl font-bold text-sm tracking-wide shadow-md shadow-amber-500/10 hover:from-amber-400 hover:to-yellow-400 transition duration-200 cursor-pointer text-center block uppercase font-sans"
                         >
                             🛡️ Proceder a la Compra
                         </button>

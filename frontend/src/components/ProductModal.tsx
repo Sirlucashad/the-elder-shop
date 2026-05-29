@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Product, Variante } from "../types/products";
+import { useCart } from "../context/CartContext"; // Hook del carrito
 
 interface ProductModalProps {
     product: Product;
@@ -7,14 +8,30 @@ interface ProductModalProps {
 }
 
 export default function ProductModal({ product, onClose }: ProductModalProps) {
+    const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
+
     const esVideojuego = !!product.videojuego;
     const variantes = product.variantes || [];
 
-    // Estados locales para la configuración de la compra
+    // Selección de la variante activa local
     const [varianteSeleccionada, setVarianteSeleccionada] = useState<Variante>(variantes[0]);
+
+    // Buscar si la variante seleccionada ya tiene presencia real en el carrito
+    const itemEnCarrito = cartItems.find(i => i.producto_variante_id === varianteSeleccionada?.id);
+
+    // Estado local para controlar el número del input del modal
     const [cantidad, setCantidad] = useState<number>(1);
 
-    // Manejo de cantidades
+    // Cada vez que cambie la variante seleccionada o el carrito, actualizamos el valor base
+    useEffect(() => {
+        if (itemEnCarrito) {
+            setCantidad(itemEnCarrito.cantidad);
+        } else {
+            setCantidad(1); // Valor inicial por defecto si está en 0
+        }
+    }, [varianteSeleccionada, itemEnCarrito]);
+
+    // Manejo de cantidades locales respetando el stock real
     const incrementar = () => {
         if (cantidad < (varianteSeleccionada?.stock || 1)) {
             setCantidad(prev => prev + 1);
@@ -27,7 +44,25 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
         }
     };
 
-    // Precios formateados
+    // Al darle al botón principal, inyecta o actualiza el carrito central
+    const handleActionCarrito = () => {
+        if (itemEnCarrito) {
+            // Si el usuario baja manualmente a través del modal (cosa que no permite el decrementar pero por seguridad)
+            updateQuantity(itemEnCarrito.id, varianteSeleccionada.id, cantidad);
+        } else {
+            addToCart({
+                producto_variante_id: varianteSeleccionada.id,
+                cantidad: cantidad,
+                nombre: product.nombre,
+                precioUnitario: varianteSeleccionada.precio || 0,
+                imagen: product.image_url || "",
+                varianteInfo: `${varianteSeleccionada.plataforma?.nombre || "General"} - ${varianteSeleccionada.formato?.nombre || ""}`
+            });
+        }
+        onClose(); // Cerrar de forma limpia
+    };
+
+    // Precios formateados originales
     const precioUnitario = varianteSeleccionada?.precio || 0;
     const precioTotal = precioUnitario * cantidad;
 
@@ -103,7 +138,7 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                         </p>
                     </div>
 
-                    {/* DETALLES ADICIONALES (Si es videojuego) */}
+                    {/* DETALLES ADICIONALES */}
                     {esVideojuego && product.videojuego && (
                         <div className="grid grid-cols-2 gap-4 bg-slate-950/40 p-3 rounded-xl border border-slate-800 mb-6 text-xs text-slate-400">
                             <div>
@@ -117,7 +152,7 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                         </div>
                     )}
 
-                    {/* SELECCIÓN DE VARIANTE (Plataformas / Formatos) */}
+                    {/* SELECCIÓN DE VARIANTE */}
                     {variantes.length > 1 && (
                         <div className="mb-6">
                             <h4 className="text-xs uppercase tracking-wider text-slate-500 font-bold mb-2">Selecciona una opción:</h4>
@@ -125,10 +160,11 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                                 {variantes.map((v) => (
                                     <button
                                         key={v.id}
-                                        onClick={() => { setVarianteSeleccionada(v); setCantidad(1); }}
+                                        type="button"
+                                        onClick={() => setVarianteSeleccionada(v)}
                                         className={`p-2.5 text-xs rounded-xl border text-left transition-all cursor-pointer ${varianteSeleccionada.id === v.id
-                                                ? "bg-teal-500/10 border-teal-500 text-teal-400 font-bold"
-                                                : "bg-slate-800/40 border-slate-700/60 text-slate-400 hover:border-slate-600"
+                                            ? "bg-teal-500/10 border-teal-500 text-teal-400 font-bold"
+                                            : "bg-slate-800/40 border-slate-700/60 text-slate-400 hover:border-slate-600"
                                             }`}
                                     >
                                         <span className="block font-medium text-slate-200">{v.plataforma?.nombre || "General"}</span>
@@ -169,7 +205,7 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                                 </span>
                             </div>
 
-                            {/* Selector de cantidad + y - */}
+                            {/* Selector de cantidad */}
                             <div className="flex items-center bg-slate-950 border border-slate-700 rounded-xl overflow-hidden p-1">
                                 <button
                                     onClick={decrementar}
@@ -194,10 +230,14 @@ export default function ProductModal({ product, onClose }: ProductModalProps) {
                         {/* BOTONES DE ACCIÓN PRINCIPALES */}
                         <div className="flex gap-2">
                             <button
+                                onClick={handleActionCarrito}
                                 disabled={!varianteSeleccionada || varianteSeleccionada.stock <= 0}
                                 className="flex-1 bg-teal-500 hover:bg-teal-400 disabled:bg-slate-800 disabled:text-slate-600 disabled:border-transparent text-slate-950 font-black text-sm py-3.5 px-4 rounded-xl transition-all active:scale-[0.98] cursor-pointer text-center"
                             >
-                                {varianteSeleccionada?.stock > 0 ? "Agregar al Carrito" : "Agotado"}
+                                {varianteSeleccionada?.stock > 0
+                                    ? (itemEnCarrito ? "Actualizar Carrito" : "Agregar al Carrito")
+                                    : "Agotado"
+                                }
                             </button>
 
                             <button

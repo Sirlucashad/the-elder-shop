@@ -1,5 +1,5 @@
-import { useState } from "react";
 import type { Product } from "../types/products";
+import { useCart } from "../context/CartContext"; // Hook del carrito
 
 interface ProductCardProps {
     product: Product;
@@ -7,6 +7,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onOpenModal }: ProductCardProps) {
+    const { cartItems, addToCart, updateQuantity, removeFromCart } = useCart();
+
     const esVideojuego = !!product.videojuego;
     const variantesValidas = product.variantes || [];
 
@@ -16,12 +18,14 @@ export default function ProductCard({ product, onOpenModal }: ProductCardProps) 
         variantesValidas[0]
     );
 
+    const varianteId = variantePrincipal?.id || 0;
     const stockDisponible = variantePrincipal?.stock || 0;
 
-    // Estado local para el carrito de esta tarjeta
-    const [cantidad, setCantidad] = useState<number>(0);
+    // LEER REACTIVAMENTE DEL CONTEXTO: Buscamos si esta variante principal está en el carrito
+    const itemEnCarrito = cartItems.find(i => i.producto_variante_id === varianteId);
+    const cantidad = itemEnCarrito ? itemEnCarrito.cantidad : 0;
 
-    // Formatear el precio
+    // Formatear el precio original
     const tienePrecio = variantePrincipal && variantePrincipal.precio !== undefined;
     const precioFormateado = tienePrecio
         ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(variantePrincipal.precio!)
@@ -34,24 +38,37 @@ export default function ProductCard({ product, onOpenModal }: ProductCardProps) 
         new Set(variantesValidas.map(v => v.formato?.nombre).filter(Boolean))
     );
 
-    // Handlers para el carrito con stopPropagation
+    // Handlers integrados al CartContext globales
     const agregarAlCarrito = (e: React.MouseEvent) => {
-        e.stopPropagation(); // Evita que se abra el modal al interactuar con el botón
+        e.stopPropagation();
         if (stockDisponible > 0) {
-            setCantidad(1);
+            addToCart({
+                producto_variante_id: varianteId,
+                cantidad: 1,
+                nombre: product.nombre,
+                precioUnitario: variantePrincipal?.precio || 0,
+                imagen: product.image_url || "",
+                varianteInfo: `${variantePrincipal?.plataforma?.nombre || "General"} - ${variantePrincipal?.formato?.nombre || ""}`
+            });
         }
     };
 
     const incrementar = (e: React.MouseEvent) => {
         e.stopPropagation();
-        if (cantidad < stockDisponible) {
-            setCantidad(prev => prev + 1);
+        if (cantidad < stockDisponible && itemEnCarrito) {
+            updateQuantity(itemEnCarrito.id, varianteId, cantidad + 1);
         }
     };
 
     const decrementar = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setCantidad(prev => prev - 1);
+        if (itemEnCarrito) {
+            if (cantidad <= 1) {
+                removeFromCart(itemEnCarrito.id);
+            } else {
+                updateQuantity(itemEnCarrito.id, varianteId, cantidad - 1);
+            }
+        }
     };
 
     return (
@@ -59,7 +76,7 @@ export default function ProductCard({ product, onOpenModal }: ProductCardProps) 
             onClick={onOpenModal}
             className="group flex flex-col h-full bg-slate-900/60 border border-slate-700/50 rounded-2xl overflow-hidden hover:border-amber-500/50 hover:shadow-lg hover:shadow-amber-500/5 transition-all duration-300 cursor-pointer"
         >
-            {/* CONTENEDOR DE IMAGEN (Cambiado de aspect-video a aspect-square para dar más espacio y proporción cuadrada) */}
+            {/* CONTENEDOR DE IMAGEN */}
             <div className="relative aspect-square w-full bg-slate-800 overflow-hidden">
                 {product.image_url ? (
                     <img
@@ -82,12 +99,12 @@ export default function ProductCard({ product, onOpenModal }: ProductCardProps) 
 
             {/* CONTENIDO DEL PRODUCTO */}
             <div className="flex flex-col flex-1 p-4">
-                {/* TÍTULO (Cambia a color dorado en hover de la card) */}
+                {/* TÍTULO */}
                 <h3 className="text-lg font-bold text-slate-100 group-hover:text-amber-400 line-clamp-1 transition-colors">
                     {product.nombre}
                 </h3>
 
-                {/* GÉNEROS (Si es videojuego) */}
+                {/* GÉNEROS */}
                 {esVideojuego && product.videojuego?.generos && product.videojuego.generos.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1.5 mb-2">
                         {product.videojuego.generos.map((gen) => (
@@ -122,7 +139,7 @@ export default function ProductCard({ product, onOpenModal }: ProductCardProps) 
                         </div>
                     )}
 
-                    {/* Muestra si alguna variante tiene stock */}
+                    {/* Disponibilidad */}
                     <div className="flex items-center justify-between text-xs">
                         <span className="text-slate-500">Disponibilidad:</span>
                         {stockDisponible > 0 ? (
@@ -133,7 +150,7 @@ export default function ProductCard({ product, onOpenModal }: ProductCardProps) 
                     </div>
                 </div>
 
-                {/* PRECIO Y ACCIÓN TRANSFORMA-BOTÓN (Estética Dorada) */}
+                {/* PRECIO Y ACCIÓN */}
                 <div className="flex items-center justify-between mt-auto pt-2 border-t border-slate-800/50">
                     <div>
                         {variantesValidas.length > 1 && (
@@ -144,7 +161,7 @@ export default function ProductCard({ product, onOpenModal }: ProductCardProps) 
                         </p>
                     </div>
 
-                    {/* Lógica del botón dinámico */}
+                    {/* Botón dinámico */}
                     {stockDisponible === 0 ? (
                         <button
                             disabled

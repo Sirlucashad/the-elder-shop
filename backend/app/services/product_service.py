@@ -47,3 +47,9 @@ class ProductService:
             limit=limit,
             offset=offset
         )
+    
+    # ======================
+    # UPDATE
+    # ======================
+    def update_product(self, producto_id: int, data):
+        return self.repository.update(producto_id, data)

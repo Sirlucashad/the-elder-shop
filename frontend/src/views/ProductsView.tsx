@@ -17,18 +17,7 @@ export default function ProductsView() {
     const { data: products, isLoading, isError } = useProducts();
     const { deleteProduct, isDeleting } = useProductActions();
 
-    // Helpers para mapear IDs a etiquetas legibles
-    const getPlataforma = (id?: number) => {
-        const plataformas: Record<number, string> = {
-            1: "PC", 2: "PS5", 3: "Xbox Series", 4: "Nintendo Switch"
-        };
-        return id ? plataformas[id] : "N/A";
-    };
-
-    const getFormato = (id?: number) => {
-        const formatos: Record<number, string> = { 1: "Digital", 2: "Físico" };
-        return id ? formatos[id] : "N/A";
-    };
+  
 
     // Manejador de eliminación con feedback
     const handleDelete = (id: number, nombre: string) => {

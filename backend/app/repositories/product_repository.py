@@ -314,3 +314,104 @@ class ProductRepository:
                 status_code=500,
                 detail="Error en el motor de búsqueda"
             )
+        
+
+        # ======================
+    # UPDATE
+    # ======================
+    def update(self, producto_id: int, data):
+        try:
+            logger.info(f"Iniciando actualización de producto ID: {producto_id}")
+
+            # 1. Buscar el producto base existente
+            producto = self.db.query(Producto).filter(Producto.id == producto_id).first()
+            if not producto:
+                logger.warning(f"Intento fallido de actualizar producto inexistente: ID {producto_id}")
+                raise HTTPException(
+                    status_code=404,
+                    detail="Producto no encontrado"
+                )
+
+            # 2. Actualizar datos del producto base
+            producto.nombre = data.nombre
+            producto.descripcion = data.descripcion
+            producto.tipo_id = data.tipo_id
+            producto.image_url = data.image_url
+            producto.image_public_id = data.image_public_id
+
+            # 3. Limpiar variantes antiguas (evita duplicados/huerfanos)
+            # Al borrar ProductoVariante, SQLAlchemy borrará automáticamente VarianteDigital si usas cascades,
+            # de lo contrario, lo manejamos explícitamente limpiando las relaciones.
+            for v_vieja in producto.variantes:
+                if v_vieja.detalle_digital:
+                    self.db.delete(v_vieja.detalle_digital)
+                self.db.delete(v_vieja)
+            
+            self.db.flush() # Sincroniza los borrados antes de insertar lo nuevo
+
+            # 4. Insertar las nuevas variantes del formulario
+            for v in data.variantes:
+                nueva_variante = ProductoVariante(
+                    producto_id=producto.id,
+                    plataforma_id=v.plataforma_id,
+                    formato_id=v.formato_id,
+                    stock=v.stock,
+                    precio=v.precio
+                )
+                self.db.add(nueva_variante)
+                self.db.flush()
+
+                if v.detalle_digital:
+                    nuevo_detalle = VarianteDigital(
+                        variante_id=nueva_variante.id,
+                        url_descarga=v.detalle_digital.url_descarga,
+                        peso_gb=v.detalle_digital.peso_gb,
+                        instrucciones_canje=v.detalle_digital.instrucciones_canje
+                    )
+                    self.db.add(nuevo_detalle)
+
+            # 5. Actualizar o Reconstruir la información del Videojuego
+            if producto.videojuego:
+                self.db.delete(producto.videojuego)
+                self.db.flush()
+
+            if data.videojuego:
+                nuevo_videojuego = Videojuego(
+                    producto_id=producto.id,
+                    anio_lanzamiento=data.videojuego.anio_lanzamiento,
+                    jugadores_max=data.videojuego.jugadores_max,
+                    es_cooperativo=data.videojuego.es_cooperativo
+                )
+                self.db.add(nuevo_videojuego)
+                self.db.flush()
+
+                # Vincular los nuevos géneros seleccionados en el front
+                generos = self.db.query(Genero).filter(
+                    Genero.id.in_(data.videojuego.generos_ids)
+                ).all()
+
+                if len(generos) != len(data.videojuego.generos_ids):
+                    logger.warning("Algunos IDs de género proporcionados para la actualización no existen.")
+
+                nuevo_videojuego.generos = generos
+
+            # 6. Consolidar cambios en la BD
+            self.db.commit()
+            
+            # Sincronizamos y volvemos a cargar con todas las relaciones (joinedload) para retornar ProductoOut limpio
+            return self.get_by_id(producto.id)
+
+        except HTTPException as http_ex:
+            # Si es un 404 controlado por nosotros, no hacemos rollback de cosas externas inesperadas
+            self.db.rollback()
+            raise http_ex
+        except Exception as e:
+            self.db.rollback()
+            logger.error(
+                f"Error crítico al actualizar producto {producto_id}: {str(e)}",
+                exc_info=True
+            )
+            raise HTTPException(
+                status_code=500,
+                detail="Error interno al actualizar el producto"
+            )

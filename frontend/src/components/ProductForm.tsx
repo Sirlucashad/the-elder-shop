@@ -22,6 +22,7 @@ interface Props {
     watch: UseFormWatch<ProductFormData>;
     setValue: UseFormSetValue<ProductFormData>;
     isPending?: boolean;
+    isEditing?: boolean;
 }
 
 
@@ -30,7 +31,8 @@ export default function ProductForm({
     errors,
     watch,
     setValue,
-    isPending
+    isPending,
+    isEditing
 }: Props) {
 
     const tipoSeleccionado = watch("tipo_id");
@@ -39,7 +41,7 @@ export default function ProductForm({
 
     const formatoSeleccionado = watch("variantes.0.formato_id");
 
-    const esDigital = Number(formatoSeleccionado) === 1;
+    const esDigital = Number(formatoSeleccionado) === 2;
 
     const [isUploading, setIsUploading] = useState(false);
 
@@ -637,8 +639,9 @@ export default function ProductForm({
             >
 
                 {isPending
-                    ? "Creando producto..."
-                    : "Crear producto"}
+                    ? isEditing ? "Actualizando producto..." : "Creando producto..."
+                    : isEditing ? "Actualizar producto" : "Crear producto"
+                }
 
             </button>
 

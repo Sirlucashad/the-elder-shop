@@ -85,3 +85,18 @@ def search_productos(
         limit=limit,
         offset=offset
     )
+
+# ======================
+# UPDATE (PUT)
+# ======================
+@router.put("/{producto_id}", response_model=ProductoOut)
+def update_producto(
+    producto_id: int,
+    data: ProductoCreate,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    repo = ProductRepository(db)
+    service = ProductService(repo)
+
+    return service.update_product(producto_id, data)

@@ -8,6 +8,7 @@ import ShopView from "./views/ShopView"
 import AdminDashboardView from "./views/AdminDashBoardView"
 import CreateProductView from "./views/CreateProductView"
 import ProductsView from "./views/ProductsView"
+import EditProduct from "./views/EditProduct"
 
 export default function Router() {
 
@@ -69,6 +70,10 @@ export default function Router() {
               path="products"
               element={<ProductsView />}
             />
+            {/* Editar producto */}
+            <Route path="/admin/products/edit/:id" element={<EditProduct />} />
+
+            
 
           </Route>
 

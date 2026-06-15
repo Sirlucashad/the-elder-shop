@@ -16,7 +16,7 @@ services:
     # 🌟 Agregamos esto para que Docker sepa cuándo la base de datos está LISTA para recibir conexiones:
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12345"]
-      timeout: 5s
+      timeout: 20s
       retries: 5
       interval: 5s
 

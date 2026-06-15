@@ -85,7 +85,7 @@ class UserService:
             return {"message": "Registro exitoso. Revisa tu email para activar tu cuenta."}
 
         except HTTPException as he:
-            # Re-lanzamos errores que ya controlamos (como el 400 de disponibilidad)
+            
             raise he
         except Exception as e:
             # CAPTURA DE ERROR 500 (Cualquier cosa no prevista)

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
-import { useCart } from "../../context/CartContext"; // Importación del hook del carrito
+import { useCart } from "../../context/CartContext"; 
 
 import logo from "/src/assets/icons/logoElderShop.png";
 import Instagram from "/src/assets/icons/Instagram.svg";
@@ -17,7 +17,7 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { isAuthenticated, isAdmin, logout } = useAuthContext();
-  const { totalUnits, isCartOpen, setIsCartOpen } = useCart(); // Extraemos controles del carrito
+  const { totalUnits, isCartOpen, setIsCartOpen } = useCart(); 
   const navigate = useNavigate();
   const location = useLocation();
 

@@ -1,24 +1,26 @@
 import { useCart } from "../context/CartContext";
+import { useNavigate } from "react-router-dom";
 
 export default function CartSidebar() {
+    const navigate = useNavigate();
     const {
         cartItems,
         isCartOpen,
         setIsCartOpen,
         updateQuantity,
         removeFromCart,
-        subtotal = 0, // Valor por defecto seguro
-        total = 0     // Valor por defecto seguro
+        subtotal = 0,
+        total = 0
     } = useCart();
 
     if (!isCartOpen) return null;
 
     const handleProcederCompra = () => {
-        // 1. Cerramos la barra lateral limpiamente para que no moleste visualmente
+
         setIsCartOpen(false);
 
-        // 2. Redirección nativa y segura que no depende del orden del Router de React
-        window.location.href = "/checkout";
+
+        navigate("/checkout");
     };
 
     return (

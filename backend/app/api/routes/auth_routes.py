@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.db.database import get_db
-# Importamos los esquemas actualizados y el Enum de roles
+
 from app.schemas.usuario import UsuarioCreate, ClienteCreate, UsuarioLogin, UserRole
 from app.repositories.user_repository import UserRepository
 from app.services.user_service import UserService
@@ -14,12 +14,9 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 def register_cliente(data: ClienteCreate, db: Session = Depends(get_db)):
-    """
-    Ruta pública para que los clientes se registren.
-    Pide obligatoriamente dirección, teléfono, provincia, etc.
-    """
+   
     service = UserService(UserRepository(db))
-    # Por defecto register_user usa UserRole.USER
+    
     return service.register_user(data)
 
 @router.post("/register-admin", status_code=status.HTTP_201_CREATED)

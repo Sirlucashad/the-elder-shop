@@ -14,7 +14,7 @@ class PagoRepository:
             estado="pendiente"
         )
         self.db.add(pago)
-        self.db.commit()              # 🔥 IMPORTANTE: persistir
+        self.db.commit()             
         self.db.refresh(pago)
         return pago
 

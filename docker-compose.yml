@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  # --- CONTENEDOR 1: BASE DE DATOS MYSQL ---
+  the-elder-db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      # Docker usará la base de datos y la clave root que declaraste en tu backend URL
+      MYSQL_DATABASE: the_elder_shop
+      MYSQL_ROOT_PASSWORD: "12345"
+    ports:
+      - "3307:3306"
+    volumes:
+      # Salvaguarda tus videojuegos en tu disco físico
+      - elder_db_data:/var/lib/mysql
+      # Opcional: Inyecta tu script de carga inicial si lo tienes listo
+      - ./init-db/script.sql:/docker-entrypoint-initdb.d/1.sql
+
+  # --- CONTENEDOR 2: BACKEND API (FastAPI) ---
+  the-elder-backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env  # Lee el .env interno del backend
+    volumes:
+      - ./backend:/app  # Mapeo en caliente para seguir programando en vivo
+    depends_on:
+      the-elder-db:
+        condition: service_healthy
+
+  # --- CONTENEDOR 3: FRONTEND (React + Vite) ---
+  the-elder-frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./frontend/.env.local # Lee el .env interno del frontend
+    volumes:
+      - ./frontend:/app # Mapeo en caliente para ver cambios visuales al instante
+      - /app/node_modules # Evita conflictos con los paquetes instalados
+    depends_on:
+      the-elder-backend:
+        condition: service_healthy
+
+volumes:
+  elder_db_data:

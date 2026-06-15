@@ -7,8 +7,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import Router from './Router.tsx'
 import { AuthProvider } from './context/AuthContext.tsx'
-import { CartProvider } from './context/CartContext.tsx' // Importamos el proveedor del carrito
-import CartSidebar from './components/CartSidebar.tsx' // Importamos la barra lateral del carrito
+import { CartProvider } from './context/CartContext.tsx' 
+
 
 const queryClient = new QueryClient()
 
@@ -18,10 +18,9 @@ createRoot(document.getElementById('root')!).render(
 
       <AuthProvider>
         <CartProvider>
-         
-          <CartSidebar />
 
           <Router />
+
         </CartProvider>
       </AuthProvider>
 

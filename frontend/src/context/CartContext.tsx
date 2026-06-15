@@ -1,8 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAuthContext } from "./AuthContext";
+import { useCartQueries } from "../hooks/useCartQueries";
 
 interface CartItem {
-    id: number;
+    id: number; // ID del CarritoItem en la base de datos
     producto_variante_id: number;
     cantidad: number;
     nombre?: string;
@@ -31,58 +32,90 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuthContext();
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
 
-    // Cargar carrito (aquí simularíamos el GET a FastAPI)
-    const fetchCart = async () => {
-        if (!isAuthenticated) return;
-        // En producción: const res = await axios.get('/api/carrito/') -> setCartItems(res.data.items)
-    };
+    // Inyectamos nuestro hook de TanStack Query
+    const { cartData, isLoading, addItem, removeItem } = useCartQueries(isAuthenticated);
 
+    // Efecto para sincronizar los datos devueltos por FastAPI con el estado local del Context
     useEffect(() => {
         if (!isAuthenticated) {
             setCartItems([]);
             setIsCartOpen(false);
+            return;
         }
-    }, [isAuthenticated]);
 
-    // Obtener de forma reactiva cuántas unidades hay de X variante en el carrito
+        if (cartData && cartData.items) {
+            // Mapeamos los campos del backend a la estructura visual que ya usan tus componentes del front
+            const mappedItems: CartItem[] = cartData.items.map((item: any) => ({
+                id: item.id,
+                producto_variante_id: item.producto_variante_id,
+                cantidad: item.cantidad,
+                // Si tu relación 'variante' en el backend ya trae el producto anidado:
+                nombre: item.variante?.producto?.nombre || "Producto",
+                precioUnitario: item.variante?.precio || 0,
+                imagen: item.variante?.producto?.image_url || "/placeholder.png",
+                varianteInfo: item.variante?.nombre || ""
+            }));
+            setCartItems(mappedItems);
+        }
+    }, [cartData, isAuthenticated]);
+
+    // Obtener cuántas unidades hay de una variante
     const getItemQuantity = (varianteId: number) => {
         const item = cartItems.find(i => i.producto_variante_id === varianteId);
         return item ? item.cantidad : 0;
     };
 
-    // Agregar al carrito reactivamente (POST a /api/carrito/items)
+    // Agregar al carrito (Llamada al POST del Backend)
     const addToCart = async (productData: Omit<CartItem, "id">) => {
-        setCartItems(prev => {
-            const existing = prev.find(i => i.producto_variante_id === productData.producto_variante_id);
-            if (existing) {
-                // Si ya existe, sumamos la cantidad seleccionada
-                return prev.map(i =>
-                    i.producto_variante_id === productData.producto_variante_id
-                        ? { ...i, cantidad: i.cantidad + productData.cantidad }
-                        : i
-                );
-            }
-            // Si es nuevo, le creamos un ID provisorio hasta que FastAPI responda el definitivo
-            return [...prev, { ...productData, id: Date.now() }];
-        });
-
-        // Opcional: Acá harías el llamado real await axios.post('/api/carrito/items', ...)
+        if (!isAuthenticated) return;
+        try {
+            await addItem({
+                producto_variante_id: productData.producto_variante_id,
+                cantidad: productData.cantidad
+            });
+        } catch (error) {
+            console.error("Error al añadir item al carrito en BD:", error);
+        }
     };
 
+    // Actualizar cantidad (Suma, resta o elimina desde las flechas)
     const updateQuantity = async (itemId: number, varianteId: number, nuevaCantidad: number) => {
+        if (!isAuthenticated) return;
+
+        const itemActual = cartItems.find(i => i.id === itemId);
+        if (!itemActual) return;
+
         if (nuevaCantidad <= 0) {
             await removeFromCart(itemId);
             return;
         }
-        setCartItems(prev => prev.map(item => item.producto_variante_id === varianteId ? { ...item, cantidad: nuevaCantidad } : item));
+
+        // Calculamos la diferencia netamente para mandar al backend
+        // Si hay 2 unidades y pasamos a 3, mandamos +1. Si pasamos a 1, mandamos -1.
+        const diferencia = nuevaCantidad - itemActual.cantidad;
+
+        try {
+            await addItem({
+                producto_variante_id: varianteId,
+                cantidad: diferencia
+            });
+        } catch (error) {
+            console.error("Error al actualizar cantidad en BD:", error);
+        }
     };
 
+    // Eliminar completamente el ítem del renglón (Llamada al DELETE del Backend)
     const removeFromCart = async (itemId: number) => {
-        setCartItems(prev => prev.filter(item => item.id !== itemId));
+        if (!isAuthenticated) return;
+        try {
+            await removeItem(itemId);
+        } catch (error) {
+            console.error("Error al remover item del carrito en BD:", error);
+        }
     };
 
+    // Cálculos automáticos y reactivos basados en la data real mapeada de la BD
     const totalUnits = cartItems.reduce((acc, item) => acc + item.cantidad, 0);
     const subtotal = cartItems.reduce((acc, item) => acc + (item.precioUnitario || 0) * item.cantidad, 0);
     const total = subtotal;

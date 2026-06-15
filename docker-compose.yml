@@ -6,16 +6,19 @@ services:
     image: mysql:8.0
     restart: always
     environment:
-      # Docker usará la base de datos y la clave root que declaraste en tu backend URL
       MYSQL_DATABASE: the_elder_shop
       MYSQL_ROOT_PASSWORD: "12345"
     ports:
       - "3307:3306"
     volumes:
-      # Salvaguarda tus videojuegos en tu disco físico
       - elder_db_data:/var/lib/mysql
-      # Opcional: Inyecta tu script de carga inicial si lo tienes listo
       - ./init-db/script.sql:/docker-entrypoint-initdb.d/1.sql
+    # 🌟 Agregamos esto para que Docker sepa cuándo la base de datos está LISTA para recibir conexiones:
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12345"]
+      timeout: 5s
+      retries: 5
+      interval: 5s
 
   # --- CONTENEDOR 2: BACKEND API (FastAPI) ---
   the-elder-backend:
@@ -23,12 +26,12 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./backend/.env  # Lee el .env interno del backend
+      - ./backend/.env
     volumes:
       - ./backend:/app  # Mapeo en caliente para seguir programando en vivo
     depends_on:
       the-elder-db:
-        condition: service_healthy
+        condition: service_healthy # 🔒 El backend se queda esperando hasta que el healthcheck de arriba dé OK
 
   # --- CONTENEDOR 3: FRONTEND (React + Vite) ---
   the-elder-frontend:
@@ -36,13 +39,12 @@ services:
     ports:
       - "5173:5173"
     env_file:
-      - ./frontend/.env.local # Lee el .env interno del frontend
+      - ./frontend/.env.local
     volumes:
-      - ./frontend:/app # Mapeo en caliente para ver cambios visuales al instante
-      - /app/node_modules # Evita conflictos con los paquetes instalados
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
-      the-elder-backend:
-        condition: service_healthy
+      - the-elder-backend # ⚡ Simplificado: arranca en cuanto el proceso del backend inicia
 
 volumes:
   elder_db_data:

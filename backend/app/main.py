@@ -23,8 +23,8 @@ from app.api.routes.genero_routes import router as genero_router
 # Forzamos a Python a mapear los modelos en memoria
 print("Modelos cargados para SQLAlchemy:", [Producto.__name__, Usuario.__name__])
 
-Base.metadata.create_all(bind=engine)
-Base.metadata.create_all(bind=engine)
+
+#Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 

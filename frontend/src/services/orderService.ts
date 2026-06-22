@@ -1,5 +1,5 @@
 // src/services/orderService.ts
-import api from "../api/config/axios"; // Asegúrate de que apunte a tu instancia configurada de Axios
+import api from "../api/config/axios"; 
 import type { OrdenOut } from "../types/orders";
 
 export const orderService = {

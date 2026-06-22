@@ -37,15 +37,15 @@ class OrdenRepository:
         orden.estado = estado
 
     def get_by_id(self, orden_id: int):
+        # 🔥 CORREGIDO: Se cambia el string por el atributo de clase DetalleOrden.producto_variante
         orden = self.db.query(Orden).options(
-            joinedload(Orden.items).joinedload("producto_variante")
+            joinedload(Orden.items).joinedload(DetalleOrden.producto_variante)
         ).filter(Orden.id == orden_id).first()
 
         if not orden:
             raise HTTPException(status_code=404, detail="Orden no encontrada")
 
         return orden
-
 
     def get_by_user(self, user_id: int):
         return self.db.query(Orden).options(

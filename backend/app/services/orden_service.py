@@ -20,7 +20,14 @@ class OrdenService:
         orden = self.orden_repo.create(usuario_id, metodo_pago)
 
         for item in carrito.items:
-            variante = item.producto_variante
+            # 🔥 CORRECCIÓN: Cambiado de item.producto_variante a item.variante
+            variante = item.variante
+
+            if not variante:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"No se encontró la información de la variante para el ítem {item.id}"
+                )
 
             if variante.stock < item.cantidad:
                 raise HTTPException(
@@ -44,19 +51,21 @@ class OrdenService:
 
         self.orden_repo.update_total(orden, total)
 
-        self.carrito_repo.clear_carrito(carrito.id)
+        self.carrito_repo.clear_carrito(carrito)
 
         self.orden_repo.commit()
         self.orden_repo.refresh(orden)
 
         return orden
 
-  
     def get_user_orders(self, user_id: int):
         return self.orden_repo.get_by_user(user_id)
 
     def get_order_detail(self, user_id: int, orden_id: int):
         orden = self.orden_repo.get_by_id(orden_id)
+
+        if not orden:
+            raise HTTPException(status_code=404, detail="Orden no encontrada")
 
         if orden.usuario_id != user_id:
             raise HTTPException(status_code=403, detail="No autorizado")

@@ -1,12 +1,13 @@
-// src/views/OrderDetailView.tsx
 import { useParams, Link } from "react-router-dom";
 import { useOrderDetail } from "../hooks/useOrders";
+import { useProcesarPago } from "../hooks/usePagos"; // 💡 Importamos el nuevo hook
 
 export default function OrderDetailView() {
     const { id } = useParams<{ id: string }>();
     const ordenId = id ? parseInt(id, 10) : undefined;
 
     const { data: orden, isLoading, error } = useOrderDetail(ordenId);
+    const { mutate: procesarPago, isPending: isProcessingPayment } = useProcesarPago(); // 💡 Hook de pago
 
     const formatearMoneda = (valor: number) =>
         new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(valor);
@@ -50,7 +51,7 @@ export default function OrderDetailView() {
                     </p>
                 </div>
 
-                {/* Instrucciones de pago ajustadas a tus Enums reales */}
+                {/* Instrucciones de pago */}
                 <div className="bg-[#040d1a] border border-slate-800/60 rounded-xl p-5 mb-6 space-y-3">
                     <h3 className="text-sm font-bold text-amber-400 uppercase tracking-wide flex items-center gap-1.5 font-medieval">
                         <span>⚔️</span> Portal de Suministros
@@ -58,10 +59,27 @@ export default function OrderDetailView() {
 
                     {orden.metodo_pago === "mercadopago" && (
                         <div className="text-xs text-slate-300 space-y-3">
-                            <p>Tu orden se encuentra en estado <span className="text-amber-400 font-mono font-bold">{orden.estado}</span>. Genera el enlace de transacciones con la API:</p>
-                            <button className="bg-sky-600 hover:bg-sky-500 text-white font-black px-5 py-2.5 rounded-lg transition-all text-xs tracking-wider uppercase cursor-pointer">
-                                🔗 Desplegar Portal de Pago
-                            </button>
+                            {orden.estado === "pendiente" ? (
+                                <>
+                                    <p>Tu orden se encuentra en estado <span className="text-amber-400 font-mono font-bold">{orden.estado}</span>. Genera el enlace de transacciones con la API:</p>
+                                    <button
+                                        onClick={() => ordenId && procesarPago(ordenId)}
+                                        disabled={isProcessingPayment}
+                                        className="bg-sky-600 hover:bg-sky-500 disabled:bg-sky-800 disabled:text-slate-400 text-white font-black px-5 py-2.5 rounded-lg transition-all text-xs tracking-wider uppercase cursor-pointer flex items-center gap-2"
+                                    >
+                                        {isProcessingPayment ? (
+                                            <>
+                                                <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                Abriendo portal mágico...
+                                            </>
+                                        ) : (
+                                            "🔗 Desplegar Portal de Pago"
+                                        )}
+                                    </button>
+                                </>
+                            ) : (
+                                <p className="text-emerald-400 font-bold">✨ Esta orden ya ha sido saldada con éxito en las arcas reales.</p>
+                            )}
                         </div>
                     )}
 
@@ -72,7 +90,7 @@ export default function OrderDetailView() {
                     )}
                 </div>
 
-                {/* Desglose mapeando los nombres exactos de OrdenItemOut */}
+                {/* Desglose de artículos */}
                 <div className="space-y-4">
                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Artículos de la Orden</h3>
                     <div className="space-y-2">

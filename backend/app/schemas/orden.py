@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 from enum import Enum
 from datetime import datetime
@@ -11,12 +11,13 @@ from datetime import datetime
 class MetodoPagoEnum(str, Enum):
     tarjeta = "tarjeta"
     mercadopago = "mercadopago"
+    transferencia = "transferencia"  # Coincide con TypeScript
 
 
 class EstadoOrdenEnum(str, Enum):
     pendiente = "pendiente"
-    pagado = "pagado"
-    cancelado = "cancelado"
+    pagada = "pagada"      # Coincide con TypeScript
+    cancelada = "cancelada"  # Coincide con TypeScript
 
 
 # ======================
@@ -24,17 +25,17 @@ class EstadoOrdenEnum(str, Enum):
 # ======================
 
 class OrdenItemOut(BaseModel):
-    producto_variante_id: int
+    id: int  # Requerido por DetalleOrdenOut en React
+    orden_id: int  # Requerido por DetalleOrdenOut en React
+    producto_variante_id: int  # 🔥 CORREGIDO: Mapeo directo sin alias de validación
     cantidad: int
     precio_unitario: float
-
-    
     subtotal: Optional[float] = None
 
     class Config:
         from_attributes = True
 
-    # 🔥 cálculo automático
+    # Cálculo automático del subtotal post-inicialización
     def model_post_init(self, __context):
         if self.subtotal is None:
             self.subtotal = self.cantidad * self.precio_unitario
@@ -59,8 +60,8 @@ class OrdenBaseOut(BaseModel):
 # ======================
 
 class OrdenOut(OrdenBaseOut):
-    usuario_id: Optional[int] = None
-    created_at: Optional[datetime] = None
+    usuario_id: int
+    created_at: datetime
     items: List[OrdenItemOut]
 
 
@@ -69,7 +70,7 @@ class OrdenOut(OrdenBaseOut):
 # ======================
 
 class OrdenListOut(OrdenBaseOut):
-    created_at: Optional[datetime] = None
+    created_at: datetime
 
 
 # ======================

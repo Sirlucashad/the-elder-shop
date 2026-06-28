@@ -16,7 +16,7 @@ class UserRepository:
         return self.db.query(Usuario).filter(Usuario.email == email).first()
 
     def get_by_username(self, username: str):
-        """NUEVO: Busca un usuario por su nombre de usuario."""
+        """Buscar un usuario por su nombre de usuario."""
         return self.db.query(Usuario).filter(Usuario.username == username).first()
 
     def get_by_token(self, token: str):
@@ -39,7 +39,7 @@ class UserRepository:
             self.db.refresh(user)
             return user
         except Exception as e:
-            self.db.rollback() # Importante: si falla, vuelve atrás para no ensuciar la sesión
+            self.db.rollback() 
             raise e
 
     def save(self, user: Usuario):

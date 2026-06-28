@@ -13,7 +13,7 @@ services:
     volumes:
       - elder_db_data:/var/lib/mysql
       - ./init-db/script.sql:/docker-entrypoint-initdb.d/1.sql
-    # 🌟 Agregamos esto para que Docker sepa cuándo la base de datos está LISTA para recibir conexiones:
+   
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p12345"]
       timeout: 20s
@@ -28,7 +28,7 @@ services:
     env_file:
       - ./backend/.env
     volumes:
-      - ./backend:/app  # Mapeo en caliente para seguir programando en vivo
+      - ./backend:/app 
     depends_on:
       the-elder-db:
         condition: service_healthy # 🔒 El backend se queda esperando hasta que el healthcheck de arriba dé OK

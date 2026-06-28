@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import app.integrations.cloudinary
 
-# 1. IMPORTANTE: Importamos el engine y la Base de tu archivo database.py
+
 from app.db.database import engine, Base
 
 from app.models import (
@@ -20,11 +20,11 @@ from app.api.routes.pago_routes import router as pago_router
 from app.api.routes.image_routes import router as image_router
 from app.api.routes.genero_routes import router as genero_router
 
-# Forzamos a Python a mapear los modelos en memoria
+
 print("Modelos cargados para SQLAlchemy:", [Producto.__name__, Usuario.__name__])
 
 
-#Base.metadata.create_all(bind=engine)
+
 
 app = FastAPI()
 

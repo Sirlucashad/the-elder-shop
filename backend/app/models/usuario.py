@@ -5,7 +5,7 @@ from datetime import datetime
 
 from app.db.database import Base
 
-# Definimos el Enum para los roles
+
 class UserRole(enum.Enum):
     USER = "user"
     ADMIN = "admin"

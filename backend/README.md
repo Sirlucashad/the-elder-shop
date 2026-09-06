@@ -1,0 +1,27 @@
+comando para iniciar
+
+docker-compose up --build     
+
+credenciales
+
+lucasgex11@gmail.com
+L1234567
+
+
+variables de entorno:
+
+
+DATABASE_URL=mysql+pymysql://root:12345@the-elder-db/the_elder_shop
+
+SECRET_KEY=una_clave_secreta
+
+EMAIL_USER=lucasgex11@gmail.com
+EMAIL_PASSWORD=ldkd wfrj nlke ztwf
+
+FRONTEND_URL=http://localhost:5173/
+
+CLOUDINARY_CLOUD_NAME=djimxiswt
+CLOUDINARY_API_KEY=884764651383268
+CLOUDINARY_API_SECRET=zCRCD5waif44AvUE_vvmgB9NCHI
+
+MP_ACCESS_TOKEN=APP_USR-7541794519168423-062120-5b20ba6e920a38b3e2186d6729e23b5a-3489261682
